@@ -33,9 +33,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      # SPA refresh fallback
-      - name: Copy index.html -> 404.html
+      - name: Copy index.html -> 404.html (SPA fallback)
         run: cp dist/index.html dist/404.html
+
+      # 👇 Debug: list dist and fail if nxl-embed.js is missing
+      - name: List dist contents
+        run: find dist -maxdepth 2 -type f | sort
+      - name: Verify embed script exists
+        run: test -f dist/nxl-embed.js
 
       - name: Upload build for Pages
         uses: actions/upload-pages-artifact@v3
@@ -52,3 +57,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
