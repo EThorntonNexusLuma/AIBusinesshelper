@@ -27,6 +27,20 @@ jobs:
           node-version: 20
           cache: npm
 
+            - name: Copy index.html -> 404.html (SPA fallback)
+    run: cp dist/index.html dist/404.html
+
+  - name: List dist contents
+    run: find dist -maxdepth 2 -type f | sort
+
+  - name: Ensure nxl-embed.js exists
+    run: |
+      if [ ! -f dist/nxl-embed.js ]; then
+        echo "nxl-embed.js missing in dist; copying from public/"
+        cp public/nxl-embed.js dist/nxl-embed.js
+      fi
+
+
       - name: Install deps
         run: npm ci || npm i
 
