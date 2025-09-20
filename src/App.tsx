@@ -10,14 +10,14 @@ function App() {
         <p className="text-lg text-gray-600 mb-8">
           Click the floating icon to open your holographic AI assistant
         </p>
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
+        <div className="bg-purple-700 p-8 rounded-lg shadow-md max-w-md mx-auto">
           <h2 className="text-xl font-semibold mb-4">Features:</h2>
-          <ul className="text-left space-y-2">
-            <li>🎤 Voice chat with Vapi AI</li>
-            <li>💬 Text chat fallback</li>
-            <li>🎨 Holographic interface</li>
-            <li>📱 Mobile responsive</li>
-            <li>🔊 Voice visualization</li>
+          <ul className="text-centered space-y-2">
+            <li>Voice chat with Vapi AI</li>
+            <li>Text chat fallback</li>
+            <li>Holographic interface</li>
+            <li>Mobile responsive</li>
+            <li>Voice visualization</li>
           </ul>
         </div>
       </div>
