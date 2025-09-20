@@ -308,7 +308,7 @@ export const VapiAssistant: React.FC = () => {
 
           {/* Interface Text */}
           <div className="interface-text">
-            <h1 className="interface-title">Advanced Voice AI Assistant</h1>
+            <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
             <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
           </div>
 
