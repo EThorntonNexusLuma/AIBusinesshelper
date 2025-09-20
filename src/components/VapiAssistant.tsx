@@ -25,7 +25,12 @@ export const VapiAssistant: React.FC = () => {
     }
   ]);
   const [textInput, setTextInput] = useState('');
-  const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>(() => {
+    // Try to persist permission state for the session
+    const stored = sessionStorage.getItem('micPermission');
+    if (stored === 'granted' || stored === 'denied') return stored;
+    return 'prompt';
+  });
 
   const vapiRef = useRef<Vapi | null>(null);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
@@ -51,14 +56,18 @@ export const VapiAssistant: React.FC = () => {
 
   // Microphone Permission
   const requestMicPermission = async (): Promise<boolean> => {
+    // Only request if never requested before in this session
+    if (micPermission !== 'prompt') return micPermission === 'granted';
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
       setMicPermission('granted');
+      sessionStorage.setItem('micPermission', 'granted');
       console.log('[Mic] Permission granted');
       return true;
     } catch (error) {
       setMicPermission('denied');
+      sessionStorage.setItem('micPermission', 'denied');
       console.error('[Mic] Permission denied:', error);
       updateStatus('❌ Microphone access denied', 'error');
       return false;
@@ -152,14 +161,13 @@ export const VapiAssistant: React.FC = () => {
   const startVoice = async () => {
     console.log('[Voice] Starting voice mode');
 
+    if (micPermission === 'denied') {
+      updateStatus('❌ Microphone access required - Permission denied', 'error');
+      setCurrentMode('text');
+      return;
+    }
+
     if (micPermission === 'prompt') {
-      const granted = await requestMicPermission();
-      if (!granted) {
-        setCurrentMode('text');
-        return;
-      }
-    } else if (micPermission === 'denied') {
-      updateStatus('❌ Microphone access required - Click to try again', 'error');
       const granted = await requestMicPermission();
       if (!granted) {
         setCurrentMode('text');
@@ -308,7 +316,7 @@ export const VapiAssistant: React.FC = () => {
 
           {/* Interface Text */}
           <div className="interface-text">
-            <h1 className="interface-title">Advanced Voice AI Assistant</h1>
+            <h1 className="interface-title">LumX Voice & Text Chat</h1>
             <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
           </div>
 
@@ -370,6 +378,10 @@ export const VapiAssistant: React.FC = () => {
           {/* Status */}
           <div className={`status ${status.className}`}>
             {status.text}
+          </div>
+          <div className="mt-8 text-xs text-gray-400">
+            Powered by <span className="font-semibold text-purple-700">Nexus Luma</span><br />
+            &copy; {new Date().getFullYear()} Nexus Luma. All rights reserved.
           </div>
         </div>
       </div>
