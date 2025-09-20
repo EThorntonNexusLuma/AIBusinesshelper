@@ -1,9 +1,8 @@
-// vite.config.ts
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// https://vitejs.dev/config/
 export default defineConfig({
-  // 👇 MUST match your repo name on GitHub
-  base: '/AIBusinesshelper/',
+  base: '/AIBusinesshelper/', // MUST match the repo name on GitHub
   plugins: [react()],
 })

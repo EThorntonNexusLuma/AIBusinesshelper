@@ -3,7 +3,6 @@
   if (window.__NXL_EMBED_LOADED__) return;
   window.__NXL_EMBED_LOADED__ = true;
 
-  // Read options from the script tag's data-* attributes
   var s = document.currentScript || (function(){
     var scripts = document.getElementsByTagName('script');
     return scripts[scripts.length - 1];
@@ -16,7 +15,6 @@
   var openByDefault = (s && s.getAttribute('data-open')) === 'true';
   var accent = (s && s.getAttribute('data-color')) || '#8b5cf6';
 
-  // Styles (scoped, won’t touch host page)
   var style = document.createElement('style');
   style.textContent = [
     '.nxl-ai-launcher{position:fixed;right:24px;bottom:24px;width:64px;height:64px;border:none;border-radius:50%;cursor:pointer;',
@@ -30,16 +28,14 @@
   ].join('');
   document.head.appendChild(style);
 
-  // Iframe -> serves your existing app unchanged
   var frame = document.createElement('iframe');
   frame.className = 'nxl-ai-frame';
   frame.title = 'Nexus Luma AI Assistant';
-  frame.src = host;                          // your Pages URL
+  frame.src = host;
   frame.allow = 'microphone; autoplay; clipboard-write;';
   frame.setAttribute('aria-hidden', openByDefault ? 'false' : 'true');
   frame.style.display = openByDefault ? 'block' : 'none';
 
-  // Launcher button
   var btn = document.createElement('button');
   btn.className = 'nxl-ai-launcher';
   btn.setAttribute('aria-label', 'Open AI Assistant');
@@ -50,7 +46,6 @@
     frame.setAttribute('aria-hidden', open ? 'true' : 'false');
   });
 
-  // Optional: allow the iframe to close itself
   window.addEventListener('message', function (e) {
     if (e && typeof e.data === 'string' && e.data === 'nxl:close') {
       frame.style.display = 'none';
@@ -61,5 +56,3 @@
   document.body.appendChild(btn);
   document.body.appendChild(frame);
 })();
-
-
