@@ -12,6 +12,125 @@ interface Message {
   isTranscript?: boolean;
 }
 
+type Lead = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  company?: string;
+  website?: string;
+  industryOrNeed?: string;
+  budget?: string;
+  timeline?: string;
+  location?: string;
+  role?: string;         // decision-maker? evaluator?
+  bestContactTime?: string;
+  notes?: string;        // freeform
+  consent?: boolean;
+};
+
+type StepId =
+  | 'greet'
+  | 'name'
+  | 'contact'
+  | 'company'
+  | 'need'
+  | 'timeline'
+  | 'budget'
+  | 'location'
+  | 'role'
+  | 'contactTime'
+  | 'notes'
+  | 'consent'
+  | 'confirm'
+  | 'done';
+
+const leadScript: {
+  id: StepId;
+  prompt: string;
+  collect?: keyof Lead;
+  validate?: (text: string) => boolean;
+  next?: (lead: Lead) => StepId; // optional dynamic branching
+}[] = [
+  {
+    id: 'greet',
+    prompt:
+      "Welcome! I'll ask a few quick questions to match you with the right specialist. Sound good?"
+  },
+  {
+    id: 'name',
+    prompt: "Great—what's your full name?",
+    collect: 'fullName',
+    validate: (t) => t.trim().split(' ').length >= 2
+  },
+  {
+    id: 'contact',
+    prompt:
+      "What's the best way to reach you—email or phone? Please share one (you can include both).",
+    collect: 'email', // temporary; we'll parse email/phone in code
+  },
+  {
+    id: 'company',
+    prompt:
+      "What's your company or brand name? (Or say 'individual' if this is personal.)",
+    collect: 'company'
+  },
+  {
+    id: 'need',
+    prompt:
+      "In 1–2 sentences, what do you need help with right now? (e.g., website, leads, automation, consulting, \"not sure yet\".)",
+    collect: 'industryOrNeed',
+  },
+  {
+    id: 'timeline',
+    prompt:
+      "What's your ideal timeline? (e.g., ASAP, 2–4 weeks, this quarter.)",
+    collect: 'timeline'
+  },
+  {
+    id: 'budget',
+    prompt:
+      "Do you have a budget range in mind? (Rough range is fine—helps us recommend the right package.)",
+    collect: 'budget'
+  },
+  {
+    id: 'location',
+    prompt:
+      "What city/timezone are you in? (So we schedule at a good time.)",
+    collect: 'location'
+  },
+  {
+    id: 'role',
+    prompt:
+      "What's your role in this decision? (e.g., owner, manager, evaluating options.)",
+    collect: 'role'
+  },
+  {
+    id: 'contactTime',
+    prompt:
+      "When's the best time to follow up? (Give a window like mornings, afternoons, or a specific date/time.)",
+    collect: 'bestContactTime'
+  },
+  {
+    id: 'notes',
+    prompt:
+      "Anything else we should know to serve you better? (Optional.)",
+    collect: 'notes'
+  },
+  {
+    id: 'consent',
+    prompt:
+      "Last step: do we have permission to store your info and contact you about this request? (yes/no)",
+    collect: 'consent',
+    validate: (t) => /^y(es)?$/i.test(t) || /^no?$/i.test(t)
+  },
+  {
+    id: 'confirm',
+    prompt:
+      "Thanks! I'll summarize what I captured for your confirmation. Say 'looks good' to submit, or tell me what to fix."
+  },
+  { id: 'done', prompt: "All set! A specialist will reach out shortly. ✅" }
+];
+
 export const VapiAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
@@ -21,11 +140,14 @@ export const VapiAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
-      content: "Hello! I'm your AI assistant. I can help you with information about luxury properties, answer questions, or just have a conversation. How can I assist you today?"
+      content: "Hello! I'm LumX, your AI assistant from Nexus Luma. I'm here to understand your needs and connect you with the right specialist. What can I help you with today?"
     }
   ]);
   const [textInput, setTextInput] = useState('');
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [lead, setLead] = useState<Lead>({});
+  const [step, setStep] = useState<StepId>('greet');
+  const [useOpenAI, setUseOpenAI] = useState(true); // toggle between scripted vs LLM small talk
 
   const vapiRef = useRef<Vapi | null>(null);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
@@ -40,6 +162,81 @@ export const VapiAssistant: React.FC = () => {
     const newMessage: Message = { type, content, isTranscript };
     setMessages(prev => [...prev, newMessage]);
     console.log(`[Message] ${type}: ${content}`);
+  };
+
+  // Helper to parse contact text into email/phone
+  const parseContact = (text: string) => {
+    const emailMatch = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    const phoneMatch = text.replace(/[\s\-().]/g, '').match(/^\+?\d{10,15}$/);
+    return {
+      email: emailMatch?.[0],
+      phone: phoneMatch ? text.match(/[\d\s\-().+]+/g)?.join('').trim() : undefined
+    };
+  };
+
+  // Advance the script (called after each user reply in text mode when Vapi call is not connected)
+  const advanceScript = async (userText: string) => {
+    // Collect the current step's data
+    const current = leadScript.find(s => s.id === step);
+    if (!current) return;
+
+    // Persist answers
+    if (current.collect) {
+      if (current.collect === 'email') {
+        const { email, phone } = parseContact(userText);
+        setLead(prev => ({ ...prev, email: email ?? prev.email, phone: phone ?? prev.phone }));
+      } else if (current.collect === 'consent') {
+        const ok = /^y(es)?$/i.test(userText);
+        setLead(prev => ({ ...prev, consent: ok }));
+      } else {
+        setLead(prev => ({ ...prev, [current.collect!]: userText.trim() }));
+      }
+    }
+
+    // Validate if needed
+    if (current.validate && !current.validate(userText)) {
+      addMessage('ai', "Got it—could you rephrase or provide a bit more detail?");
+      return;
+    }
+
+    // Decide next step
+    let nextId: StepId | undefined = current.next?.(lead) ?? leadScript[leadScript.findIndex(s => s.id === step) + 1]?.id;
+
+    // Before confirm, produce a summary
+    if (current.id === 'consent') {
+      nextId = 'confirm';
+    }
+
+    if (nextId === 'confirm') {
+      const summary = `Here's what I have:
+• Name: ${lead.fullName ?? '—'}
+• Email: ${lead.email ?? '—'} | Phone: ${lead.phone ?? '—'}
+• Company: ${lead.company ?? '—'} | Website: ${lead.website ?? '—'}
+• Need: ${lead.industryOrNeed ?? '—'}
+• Timeline: ${lead.timeline ?? '—'}
+• Budget: ${lead.budget ?? '—'}
+• Location: ${lead.location ?? '—'}
+• Role: ${lead.role ?? '—'}
+• Best Contact Time: ${lead.bestContactTime ?? '—'}
+• Notes: ${lead.notes ?? '—'}
+• Consent to contact: ${lead.consent ? 'Yes' : 'No'}`;
+
+      addMessage('ai', summary);
+      addMessage('ai', "Does this look correct? Say 'looks good' to submit, or tell me what to change.");
+      setStep('confirm');
+      return;
+    }
+
+    if (nextId === 'done') {
+      setStep('done');
+      addMessage('ai', "All set! A specialist will reach out shortly. ✅");
+      return;
+    }
+
+    // Ask the next prompt
+    setStep(nextId!);
+    const next = leadScript.find(s => s.id === nextId);
+    if (next) addMessage('ai', next.prompt);
   };
 
   // Scroll to bottom when messages change
@@ -207,28 +404,200 @@ export const VapiAssistant: React.FC = () => {
     } else {
       stopVoice();
       updateStatus('💬 Text mode active', 'inactive');
+      // The streaming system will handle the conversation flow naturally
     }
   };
 
-  // Text Chat
-  const sendTextMessage = () => {
+  // Stream message handler for real-time chat
+  const streamMessage = async (userMessage: string, chatHistory: Message[]) => {
+    updateStatus('🤔 AI thinking...', 'thinking');
+
+    // Convert internal messages to OpenAI format
+    const openAIMessages = chatHistory.map(msg => ({
+      role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
+      content: msg.content
+    }));
+
+    // Add the new user message
+    openAIMessages.push({ role: 'user', content: userMessage });
+
+    try {
+      console.log('Attempting to stream message to:', '/api/text/stream');
+      
+      const response = await fetch('/api/text/stream', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: openAIMessages })
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let assistantText = '';
+      let messageIndex = messages.length; // Index for the streaming message
+
+      // Add initial AI message for streaming (with placeholder text)
+      setMessages(prev => [...prev, { type: 'ai', content: '...', isTranscript: false }]);
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Parse SSE format "data: {...}\n\n"
+        for (const line of chunk.split('\n')) {
+          if (!line.startsWith('data:')) continue;
+          
+          try {
+            const data = JSON.parse(line.slice(5));
+            
+            if (data.delta) {
+              assistantText += data.delta;
+              // Update the streaming message in real-time
+              setMessages(prev => {
+                const newMessages = [...prev];
+                if (newMessages[messageIndex]) {
+                  newMessages[messageIndex] = {
+                    type: 'ai',
+                    content: assistantText || '...',
+                    isTranscript: false
+                  };
+                }
+                return newMessages;
+              });
+            }
+            
+            if (data.done) {
+              updateStatus('💬 Text mode active', 'inactive');
+            }
+            
+            if (data.error) {
+              console.error('Stream error:', data.error);
+              setMessages(prev => {
+                const newMessages = [...prev];
+                if (newMessages[messageIndex]) {
+                  newMessages[messageIndex] = {
+                    type: 'ai',
+                    content: 'Sorry, I encountered an error. Please try again.',
+                    isTranscript: false
+                  };
+                }
+                return newMessages;
+              });
+              break;
+            }
+          } catch (parseError) {
+            console.error('Parse error:', parseError);
+          }
+        }
+      }
+
+      // If no text was received, show an error
+      if (!assistantText.trim()) {
+        setMessages(prev => {
+          const newMessages = [...prev];
+          if (newMessages[messageIndex]) {
+            newMessages[messageIndex] = {
+              type: 'ai',
+              content: 'I apologize, but I didn\'t receive a proper response. Could you try again?',
+              isTranscript: false
+            };
+          }
+          return newMessages;
+        });
+      }
+
+      // Check if conversation seems complete and extract lead
+      if (assistantText.toLowerCase().includes('consent') || 
+          assistantText.toLowerCase().includes('contact you')) {
+        await extractLeadFromConversation([...messages, 
+          { type: 'user', content: userMessage, isTranscript: false },
+          { type: 'ai', content: assistantText, isTranscript: false }
+        ]);
+      }
+
+    } catch (error) {
+      console.error('Streaming error:', error);
+      // Fallback to regular chat API if streaming fails
+      updateStatus('💬 Using fallback chat...', 'thinking');
+      
+      try {
+        const fallbackResponse = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: openAIMessages })
+        });
+        
+        if (fallbackResponse.ok) {
+          const data = await fallbackResponse.json();
+          addMessage('ai', data.reply || 'Sorry, I encountered an error. Please try again.');
+        } else {
+          addMessage('ai', 'I\'m having trouble connecting. Please check your connection and try again.');
+        }
+      } catch (fallbackError) {
+        console.error('Fallback error:', fallbackError);
+        addMessage('ai', 'I\'m having trouble connecting. Please check your connection and try again.');
+      }
+      
+      updateStatus('💬 Text mode active', 'inactive');
+    }
+  };
+
+  // Extract lead from conversation when appropriate
+  const extractLeadFromConversation = async (conversationMessages: Message[]) => {
+    try {
+      const response = await fetch('/api/text/extract-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript: conversationMessages })
+      });
+
+      const data = await response.json();
+      
+      if (data.lead && data.lead.consent) {
+        console.log('Lead extracted:', data.lead);
+        // Save to existing lead submission endpoint
+        await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lead: data.lead })
+        });
+        console.log('Lead saved successfully');
+      }
+    } catch (error) {
+      console.error('Lead extraction error:', error);
+    }
+  };
+
+  // Text Chat - Enhanced with streaming
+  const sendTextMessage = async () => {
     const message = textInput.trim();
     if (!message) return;
+
+    console.log('📤 Sending text message:', message);
+    console.log('📊 Current messages count:', messages.length);
 
     addMessage('user', message);
     setTextInput('');
 
-    updateStatus('🤔 AI thinking...', 'thinking');
-
-    // If voice is connected, try to send through Vapi
+    // If voice is connected, prefer sending to Vapi call
     if (isConnected && vapiRef.current) {
       try {
+        console.log('📞 Sending via Vapi voice connection');
         vapiRef.current.send({
           type: 'add-message',
-          message: {
-            role: 'user',
-            content: message
-          }
+          message: { role: 'user', content: message }
         });
         return;
       } catch (error) {
@@ -236,20 +605,9 @@ export const VapiAssistant: React.FC = () => {
       }
     }
 
-    // Fallback: Simulate response for text-only mode
-    setTimeout(() => {
-      const responses = [
-        "I'd be happy to help you with that. Could you provide more specific details about what you're looking for?",
-        "That's an interesting question! Based on what you've asked, I can provide some information about luxury properties and their amenities.",
-        "Thank you for your question. I can assist you with property information, scheduling viewings, or answering questions about our luxury real estate offerings.",
-        "I understand you're interested in learning more. What specific aspects would you like me to focus on?",
-        "Great question! I can provide detailed information about pricing, locations, amenities, and help you schedule property viewings."
-      ];
-      
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      addMessage('ai', randomResponse);
-      updateStatus('💬 Text mode active', 'inactive');
-    }, 1000 + Math.random() * 1000);
+    // Use streaming for better UX in text mode
+    console.log('💬 Using text streaming mode');
+    await streamMessage(message, messages);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
