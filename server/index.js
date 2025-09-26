@@ -8,8 +8,26 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(bodyParser.json());
+
+// Enhanced CORS configuration
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: false
+}));
+
+// Handle preflight requests
+app.options('*', cors());
+
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Debug middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -190,7 +208,21 @@ app.get('/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+
+// Global error handling
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+const server = app.listen(PORT, () => {
   console.log(`✅ API server listening on port ${PORT}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+});
+
+server.on('error', (error) => {
+  console.error('Server error:', error);
 });

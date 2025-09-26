@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: lumx-ai-backend
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: cd server && node index.js
+    healthCheckPath: /health
+    envVars:
+      - key: OPENAI_API_KEY
+        fromGroup: secrets
+      - key: PORT
+        value: 10000

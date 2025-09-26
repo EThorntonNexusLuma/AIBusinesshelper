@@ -6,6 +6,17 @@ import { Mic, X, Send } from 'lucide-react';
 const PUBLIC_KEY = "385ecf4c-99a4-4319-8b03-111c6c61abf9";
 const ASSISTANT_ID = "900acf00-1429-4a76-92b2-93f0e4ffa109";
 
+// API URL configuration
+const getApiUrl = () => {
+  // In development, use proxy
+  if (import.meta.env.DEV) {
+    return '';
+  }
+  
+  // In production, use environment variable or fallback
+  return import.meta.env.VITE_API_URL || 'https://your-backend-url.railway.app';
+};
+
 interface Message {
   type: 'user' | 'ai' | 'transcript';
   content: string;
@@ -424,7 +435,7 @@ export const VapiAssistant: React.FC = () => {
     try {
       console.log('Attempting to stream message to:', '/api/text/stream');
       
-      const response = await fetch('/api/text/stream', {
+      const response = await fetch(`${getApiUrl()}/api/text/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: openAIMessages })
@@ -533,7 +544,7 @@ export const VapiAssistant: React.FC = () => {
       updateStatus('💬 Using fallback chat...', 'thinking');
       
       try {
-        const fallbackResponse = await fetch('/api/chat', {
+        const fallbackResponse = await fetch(`${getApiUrl()}/api/chat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: openAIMessages })
@@ -557,7 +568,7 @@ export const VapiAssistant: React.FC = () => {
   // Extract lead from conversation when appropriate
   const extractLeadFromConversation = async (conversationMessages: Message[]) => {
     try {
-      const response = await fetch('/api/text/extract-lead', {
+      const response = await fetch(`${getApiUrl()}/api/text/extract-lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transcript: conversationMessages })
@@ -568,7 +579,7 @@ export const VapiAssistant: React.FC = () => {
       if (data.lead && data.lead.consent) {
         console.log('Lead extracted:', data.lead);
         // Save to existing lead submission endpoint
-        await fetch('/api/leads', {
+        await fetch(`${getApiUrl()}/api/leads`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ lead: data.lead })
