@@ -108,7 +108,20 @@
   text-shadow: 0 1px 3px rgba(76, 195, 255, 0.6); font-weight: 500; 
 }
 
-.controls { display: flex; gap: 20px; justify-content: center; margin-bottom: 30px; }
+.controls { 
+  display: flex !important; gap: 20px !important; justify-content: center !important; 
+  margin-bottom: 30px !important; 
+}
+
+.controls-side-by-side {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 15px !important;
+  margin: 20px 0 !important;
+  padding: 0 10px !important;
+}
 .control-btn { 
   padding: 12px 24px; border: none; border-radius: 25px; font-size: 14px; font-weight: 500; 
   cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); 
@@ -279,8 +292,9 @@
 }
 
 .chat-input-container { 
-  display: flex; gap: 12px; 
+  display: flex; gap: 12px;
   position: relative;
+  margin-top: 18px;
 }
 .chat-input-row {
   gap: 8px;

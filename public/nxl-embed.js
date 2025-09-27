@@ -1,58 +1,55 @@
-/* Nexus Luma — Embed Widget */
-(function () {
+/* Nexus Luma AI Assistant - Embed Widget */
+(function() {
   if (window.__NXL_EMBED_LOADED__) return;
   window.__NXL_EMBED_LOADED__ = true;
 
-  var s = document.currentScript || (function(){
-    var scripts = document.getElementsByTagName('script');
-    return scripts[scripts.length - 1];
-  })();
+  // Your GitHub Pages URL
+  var HOST = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';
 
-  var host = (s && s.getAttribute('data-host')) || 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';
-  if (!host.endsWith('/')) host += '/';
-  var width = (s && s.getAttribute('data-width')) || '420px';
-  var height = (s && s.getAttribute('data-height')) || '640px';
-  var openByDefault = (s && s.getAttribute('data-open')) === 'true';
-  var accent = (s && s.getAttribute('data-color')) || '#8b5cf6';
+  // Create the floating icon
+  var icon = document.createElement('div');
+  icon.innerHTML = '🎤';
+  icon.style.cssText = 'position:fixed!important;bottom:30px!important;right:30px!important;width:70px!important;height:70px!important;border-radius:50%!important;background:linear-gradient(135deg,#7A3FFF,#4CC3FF)!important;color:white!important;font-size:30px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 8px 32px rgba(30,63,255,0.4)!important;transition:transform 0.3s ease!important;';
+  
+  // Create the iframe
+  var iframe = document.createElement('iframe');
+  iframe.src = HOST;
+  iframe.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;border:none!important;z-index:999998!important;display:none!important;';
+  iframe.allow = 'microphone; camera; autoplay';
 
-  var style = document.createElement('style');
-  style.textContent = [
-    '.nxl-ai-launcher{position:fixed;right:24px;bottom:24px;width:64px;height:64px;border:none;border-radius:50%;cursor:pointer;',
-    'display:grid;place-items:center;font-size:26px;color:#fff;background:'+accent+';box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 0 18px rgba(255,255,255,.08);',
-    'z-index:2147483647;transition:transform .2s ease}',
-    '.nxl-ai-launcher:hover{transform:translateY(-2px)}',
-    '.nxl-ai-launcher::after{content:"";position:absolute;inset:-8px;border-radius:inherit;box-shadow:0 0 32px '+accent+'55;pointer-events:none}',
-    '.nxl-ai-frame{position:fixed;right:24px;bottom:100px;width:'+width+';height:'+height+';border:0;border-radius:16px;overflow:hidden;',
-    'box-shadow:0 18px 60px rgba(0,0,0,.45);z-index:2147483647;background:transparent;display:none}',
-    '@media (max-width:600px){.nxl-ai-frame{right:12px;left:12px;bottom:88px;width:auto;height:70vh}}'
-  ].join('');
-  document.head.appendChild(style);
+  // Toggle function
+  function toggle() {
+    if (iframe.style.display === 'none') {
+      iframe.style.display = 'block';
+      icon.style.display = 'none';
+    } else {
+      iframe.style.display = 'none';
+      icon.style.display = 'flex';
+    }
+  }
 
-  var frame = document.createElement('iframe');
-  frame.className = 'nxl-ai-frame';
-  frame.title = 'Nexus Luma AI Assistant';
-  frame.src = host;
-  frame.allow = 'microphone; autoplay; clipboard-write;';
-  frame.setAttribute('aria-hidden', openByDefault ? 'false' : 'true');
-  frame.style.display = openByDefault ? 'block' : 'none';
-
-  var btn = document.createElement('button');
-  btn.className = 'nxl-ai-launcher';
-  btn.setAttribute('aria-label', 'Open AI Assistant');
-  btn.innerHTML = '💬';
-  btn.addEventListener('click', function () {
-    var open = frame.style.display !== 'none';
-    frame.style.display = open ? 'none' : 'block';
-    frame.setAttribute('aria-hidden', open ? 'true' : 'false');
-  });
-
-  window.addEventListener('message', function (e) {
-    if (e && typeof e.data === 'string' && e.data === 'nxl:close') {
-      frame.style.display = 'none';
-      frame.setAttribute('aria-hidden', 'true');
+  // Event listeners
+  icon.addEventListener('click', toggle);
+  
+  // Listen for close message from iframe
+  window.addEventListener('message', function(e) {
+    if (e.data === 'nxl:close') {
+      iframe.style.display = 'none';
+      icon.style.display = 'flex';
     }
   });
 
-  document.body.appendChild(btn);
-  document.body.appendChild(frame);
+  // Append to body
+  document.body.appendChild(icon);
+  document.body.appendChild(iframe);
+
+  // Hover effect
+  icon.addEventListener('mouseenter', function() {
+    icon.style.transform = 'scale(1.1)';
+  });
+  
+  icon.addEventListener('mouseleave', function() {
+    icon.style.transform = 'scale(1)';
+  });
+
 })();
