@@ -735,81 +735,96 @@ export const VapiAssistant: React.FC = () => {
         </button>
 
         <div className="interface-container">
-          {/* Voice Interface */}
-          <div className="voice-interface">
-            <div className="voice-ring ring-outer"></div>
-            <div className="voice-ring ring-middle"></div>
-            <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
-              <Mic 
-                className={`mic-icon ${isListening ? 'listening' : ''}`}
-                size={30}
-              />
-            </div>
-          </div>
-
-          {/* Only show welcome/speak text in voice mode */}
+          {/* VOICE SECTION */}
           {currentMode === 'voice' && (
-            <div className="interface-text">
-              <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
-              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
-            </div>
-          )}
-
-          {/* Controls */}
-          <div className="controls">
-            <button 
-              className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
-              onClick={() => handleModeChange('voice')}
-            >
-              Voice Chat
-            </button>
-            <button 
-              className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
-              onClick={() => handleModeChange('text')}
-            >
-              Text Chat
-            </button>
-          </div>
-
-          {/* Voice Visualizer */}
-          <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="voice-bar"></div>
-            ))}
-          </div>
-
-          {/* Chat Container - Only chat interface and input for text mode */}
-          {currentMode === 'text' && (
-            <div className="chat-container active">
-              <div className="chat-messages" ref={chatMessagesRef}>
-                {messages.map((message, index) => (
-                  <div 
-                    key={index}
-                    className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
-                  >
-                    {message.content}
-                  </div>
-                ))}
+            <>
+              <div className="voice-interface">
+                <div className="voice-ring ring-outer"></div>
+                <div className="voice-ring ring-middle"></div>
+                <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
+                  <Mic 
+                    className={`mic-icon ${isListening ? 'listening' : ''}`}
+                    size={30}
+                  />
+                </div>
               </div>
-              <div className="chat-input-container chat-input-row">
-                <input
-                  type="text"
-                  className="chat-input chat-input-min"
-                  placeholder="Type your message..."
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <button
-                  className="send-btn send-btn-nomargin"
-                  onClick={sendTextMessage}
-                  disabled={!textInput.trim()}
-                  aria-label="Send message"
+              <div className="interface-text">
+                <h1 className="interface-title">Voice Assistant</h1>
+                <p className="interface-subtitle">Tap the mic and start speaking.</p>
+              </div>
+              <div className="controls">
+                <button 
+                  className={`control-btn voice-btn active`}
+                  onClick={startVoice}
                 >
-                  <Send size={16} />
+                  Start Voice
+                </button>
+                <button 
+                  className={`control-btn text-btn`}
+                  onClick={() => handleModeChange('text')}
+                >
+                  Switch to Text
                 </button>
               </div>
-            </div>
+              <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="voice-bar"></div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* TEXT SECTION */}
+          {currentMode === 'text' && (
+            <>
+              <div className="interface-text">
+                <h1 className="interface-title">Text Chat</h1>
+              </div>
+              <div className="chat-container active">
+                <div className="chat-messages" ref={chatMessagesRef}>
+                  {messages.map((message, index) => (
+                    <div 
+                      key={index}
+                      className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                    >
+                      {message.content}
+                    </div>
+                  ))}
+                </div>
+                <div className="chat-input-container chat-input-row">
+                  <input
+                    type="text"
+                    className="chat-input chat-input-min"
+                    placeholder="Type your message..."
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <button
+                    className="send-btn send-btn-nomargin"
+                    onClick={sendTextMessage}
+                    disabled={!textInput.trim()}
+                    aria-label="Send message"
+                  >
+                    <Send size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="controls">
+                <button 
+                  className={`control-btn voice-btn`}
+                  onClick={() => handleModeChange('voice')}
+                >
+                  Switch to Voice
+                </button>
+                <button 
+                  className={`control-btn text-btn active`}
+                  disabled
+                >
+                  Text Chat
+                </button>
+              </div>
+            </>
           )}
 
           {/* Status */}
