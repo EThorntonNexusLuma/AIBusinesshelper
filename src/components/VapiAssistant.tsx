@@ -810,7 +810,7 @@ export const VapiAssistant: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <div className="controls">
+              <div className="controls controls-side-by-side controls-text-spacing">
                 <button 
                   className={`control-btn voice-btn`}
                   onClick={() => handleModeChange('voice')}

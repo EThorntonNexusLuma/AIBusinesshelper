@@ -122,6 +122,11 @@
   margin: 20px 0 !important;
   padding: 0 10px !important;
 }
+
+.controls-text-spacing {
+  margin-top: 25px !important;
+  margin-bottom: 15px !important;
+}
 .control-btn { 
   padding: 12px 24px; border: none; border-radius: 25px; font-size: 14px; font-weight: 500; 
   cursor: pointer; transition: all 0.3s ease; backdrop-filter: blur(10px); 
