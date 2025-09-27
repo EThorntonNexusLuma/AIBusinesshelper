@@ -8,13 +8,16 @@ const ASSISTANT_ID = "900acf00-1429-4a76-92b2-93f0e4ffa109";
 
 // API URL configuration
 const getApiUrl = () => {
-  // In development, use proxy
+  // In development, use proxy (empty string means relative URLs)
   if (import.meta.env.DEV) {
     return '';
   }
   
-  // In production, use environment variable or fallback
-  return import.meta.env.VITE_API_URL || 'https://your-backend-url.railway.app';
+  // In production, use environment variable or show that backend is needed
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+  
+  console.log('🔗 API URL:', apiUrl, 'DEV:', import.meta.env.DEV, 'VITE_API_URL:', import.meta.env.VITE_API_URL);
+  return apiUrl;
 };
 
 interface Message {
@@ -158,7 +161,7 @@ export const VapiAssistant: React.FC = () => {
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
   const [lead, setLead] = useState<Lead>({});
   const [step, setStep] = useState<StepId>('greet');
-  const [useOpenAI, setUseOpenAI] = useState(true); // toggle between scripted vs LLM small talk
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
   const vapiRef = useRef<Vapi | null>(null);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
@@ -173,6 +176,46 @@ export const VapiAssistant: React.FC = () => {
     const newMessage: Message = { type, content, isTranscript };
     setMessages(prev => [...prev, newMessage]);
     console.log(`[Message] ${type}: ${content}`);
+  };
+
+  // Check backend status
+  const checkBackendStatus = async () => {
+    try {
+      const apiUrl = getApiUrl();
+      
+      // In development, always mark as connected (uses proxy)
+      if (import.meta.env.DEV) {
+        setBackendStatus('connected');
+        return;
+      }
+      
+      // In production, check if we have a backend URL
+      if (!apiUrl || apiUrl === '' || apiUrl.includes('your-backend-url')) {
+        setBackendStatus('disconnected');
+        console.log('❌ No backend URL configured for production');
+        return;
+      }
+      
+      // Try to connect to the backend
+      const response = await fetch(`${apiUrl}/health`, { 
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        setBackendStatus('connected');
+        console.log('✅ Backend connected:', apiUrl);
+      } else {
+        setBackendStatus('disconnected');
+        console.log('❌ Backend not responding:', apiUrl, response.status);
+      }
+    } catch (error) {
+      setBackendStatus('disconnected');
+      console.log('❌ Backend connection failed:', error);
+    }
   };
 
   // Helper to parse contact text into email/phone
@@ -423,6 +466,16 @@ export const VapiAssistant: React.FC = () => {
   const streamMessage = async (userMessage: string, chatHistory: Message[]) => {
     updateStatus('🤔 AI thinking...', 'thinking');
 
+    // Check backend status first
+    if (backendStatus === 'disconnected') {
+      const errorMsg = import.meta.env.DEV 
+        ? '⚠️ Backend server is not running on port 3001. Please start the server.'
+        : '⚠️ Backend server is not deployed. Text chat requires a deployed backend. Voice chat should still work!';
+      addMessage('ai', errorMsg);
+      updateStatus('💬 Text mode active', 'inactive');
+      return;
+    }
+
     // Convert internal messages to OpenAI format
     const openAIMessages = chatHistory.map(msg => ({
       role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
@@ -432,10 +485,13 @@ export const VapiAssistant: React.FC = () => {
     // Add the new user message
     openAIMessages.push({ role: 'user', content: userMessage });
 
+    const apiUrl = getApiUrl();
+    const streamUrl = `${apiUrl}/api/text/stream`;
+
     try {
-      console.log('Attempting to stream message to:', '/api/text/stream');
+      console.log('Attempting to stream message to:', streamUrl);
       
-      const response = await fetch(`${getApiUrl()}/api/text/stream`, {
+      const response = await fetch(streamUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: openAIMessages })
@@ -544,7 +600,9 @@ export const VapiAssistant: React.FC = () => {
       updateStatus('💬 Using fallback chat...', 'thinking');
       
       try {
-        const fallbackResponse = await fetch(`${getApiUrl()}/api/chat`, {
+        const chatUrl = `${apiUrl}/api/chat`;
+        console.log('Fallback chat URL:', chatUrl);
+        const fallbackResponse = await fetch(chatUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages: openAIMessages })
@@ -627,6 +685,11 @@ export const VapiAssistant: React.FC = () => {
       sendTextMessage();
     }
   };
+
+  // Check backend status on mount
+  useEffect(() => {
+    checkBackendStatus();
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -739,6 +802,13 @@ export const VapiAssistant: React.FC = () => {
           {/* Status */}
           <div className={`status ${status.className}`}>
             {status.text}
+            {!import.meta.env.DEV && (
+              <span className={`backend-status ${backendStatus}`}>
+                {backendStatus === 'checking' && ' • Checking backend...'}
+                {backendStatus === 'connected' && ' • Backend connected ✅'}
+                {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
+              </span>
+            )}
           </div>
         </div>
       </div>
