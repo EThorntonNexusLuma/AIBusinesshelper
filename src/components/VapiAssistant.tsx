@@ -159,7 +159,7 @@ export const VapiAssistant: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [currentMode, setCurrentMode] = useState<'voice' | 'text'>('voice');
-    const [status, setStatus] = useState({ text: 'Ready to assist', className: 'inactive' });
+  const [status, setStatus] = useState({ text: 'Ready to assist', className: 'inactive' });
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
@@ -711,40 +711,15 @@ export const VapiAssistant: React.FC = () => {
 
   return (
     <>
-      <>
-        {/* Slim Mode Switch - Always visible when assistant is open */}
-        {isOpen && (
-          <div className="mode-switch-container">
-            <div className="mode-switch">
-              <button
-                className={`mode-btn${currentMode === 'voice' ? ' active' : ''}`}
-                onClick={() => handleModeChange('voice')}
-                aria-label="Switch to Voice Mode"
-              >
-                <Mic size={16} style={{ marginRight: 4 }} /> Voice
-              </button>
-              <button
-                className={`mode-btn${currentMode === 'text' ? ' active' : ''}`}
-                onClick={() => handleModeChange('text')}
-                aria-label="Switch to Chat Mode"
-              >
-                <span style={{ fontSize: 16, marginRight: 4 }}>💬</span> Chat
-              </button>
-            </div>
-          </div>
-        )}
-
-      {/* Floating Icon - Only show in voice mode */}
-      {currentMode === 'voice' && (
-        <div 
-          className="floating-icon"
-          onClick={() => setIsOpen(true)}
-          role="button"
-          aria-label="Open AI Assistant"
-        >
-          <Mic size={30} color="white" />
-        </div>
-      )}
+      {/* Floating Icon */}
+      <div 
+        className="floating-icon"
+        onClick={() => setIsOpen(true)}
+        role="button"
+        aria-label="Open AI Assistant"
+      >
+        <Mic size={30} color="white" />
+      </div>
 
       {/* Holographic Interface */}
       <div className={`holographic-interface ${isOpen ? 'active' : ''}`}>
@@ -760,39 +735,46 @@ export const VapiAssistant: React.FC = () => {
         </button>
 
         <div className="interface-container">
-          {/* Voice Interface - Only show in voice mode */}
-          {currentMode === 'voice' && (
-            <div className="voice-interface">
-              <div className="voice-ring ring-outer"></div>
-              <div className="voice-ring ring-middle"></div>
-              <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
-                <Mic 
-                  className={`mic-icon ${isListening ? 'listening' : ''}`}
-                  size={30}
-                />
-              </div>
+          {/* Voice Interface */}
+          <div className="voice-interface">
+            <div className="voice-ring ring-outer"></div>
+            <div className="voice-ring ring-middle"></div>
+            <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
+              <Mic 
+                className={`mic-icon ${isListening ? 'listening' : ''}`}
+                size={30}
+              />
             </div>
-          )}
+          </div>
 
-          {/* Interface Text - Only show in voice mode */}
-          {currentMode === 'voice' && (
-            <div className="interface-text">
-              <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
-              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
-            </div>
-          )}
+          {/* Interface Text */}
+          <div className="interface-text">
+            <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
+            <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
+          </div>
 
-          {/* Controls - Only show in voice mode */}
-          {/* No controls in text mode for max chat space */}
+          {/* Controls */}
+          <div className="controls">
+            <button 
+              className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
+              onClick={() => handleModeChange('voice')}
+            >
+              Voice Chat
+            </button>
+            <button 
+              className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
+              onClick={() => handleModeChange('text')}
+            >
+              Text Chat
+            </button>
+          </div>
 
-          {/* Voice Visualizer - Only show in voice mode */}
-          {currentMode === 'voice' && (
-            <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="voice-bar"></div>
-              ))}
-            </div>
-          )}
+          {/* Voice Visualizer */}
+          <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="voice-bar"></div>
+            ))}
+          </div>
 
           {/* Chat Container */}
           <div className={`chat-container ${currentMode === 'text' ? 'active' : ''}`}>
@@ -816,25 +798,13 @@ export const VapiAssistant: React.FC = () => {
                 onKeyPress={handleKeyPress}
               />
               <button
-                className="send-btn slim-btn"
+                className="send-btn"
                 onClick={sendTextMessage}
                 disabled={!textInput.trim()}
                 aria-label="Send message"
-                style={{ minWidth: 32, height: 32, padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #7A3FFF, #4CC3FF)', color: '#fff', border: 'none', boxShadow: '0 1px 6px rgba(76,195,255,0.18)' }}
               >
                 <Send size={16} />
               </button>
-              {/* Microphone icon only for voice mode, not for chat */}
-              {currentMode === 'voice' && (
-                <button
-                  className="mic-btn slim-btn"
-                  onClick={startVoice}
-                  aria-label="Start voice"
-                  style={{ minWidth: 32, height: 32, padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #7A3FFF, #4CC3FF)', color: '#fff', border: 'none', boxShadow: '0 1px 6px rgba(76,195,255,0.18)', marginLeft: 6 }}
-                >
-                  <Mic size={16} />
-                </button>
-              )}
             </div>
           </div>
 

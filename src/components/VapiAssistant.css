@@ -1,21 +1,3 @@
-.slim-btn {
-  min-width: 32px !important;
-  height: 32px !important;
-  padding: 0 !important;
-  border-radius: 50% !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background: linear-gradient(135deg, #7A3FFF, #4CC3FF) !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 1px 6px rgba(76,195,255,0.18) !important;
-  transition: background 0.2s;
-}
-.slim-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 /**
  * © 2025 Nexus Luma - All Rights Reserved
  * LumX AI Assistant Holographic Interface Styles
@@ -54,19 +36,8 @@
 }
 
 .interface-container { 
-  position: relative; max-width: 500px; width: 90%; padding: 40px 30px; text-align: center; 
-  animation: holographicFloat 4s ease-in-out infinite;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-/* Compact interface for text-only mode */
-.interface-container:has(.chat-container.active) {
-  padding: 30px 20px; /* Further reduced padding when in text mode */
-  justify-content: flex-start;
+  position: relative; max-width: 500px; width: 90%; padding: 60px 40px; text-align: center; 
+  animation: holographicFloat 4s ease-in-out infinite; 
 }
 
 @keyframes holographicFloat { 
@@ -179,28 +150,10 @@
 }
 
 .chat-container { 
-  max-width: 420px;
-  width: 100%;
-  margin: 0 auto;
-  display: none;
+  max-width: 400px; width: 100%; margin: 0 auto; display: none; 
   animation: holographicFadeIn 0.8s ease-out;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 0 0 16px 0;
 }
-.chat-container.active { display: flex !important; }
-
-/* Enhanced chat space when voice interface is hidden */
-.interface-container:has(.chat-container.active) .chat-messages,
-.chat-container.active .chat-messages {
-  height: calc(100vh - 350px); /* Dynamic height based on viewport */
-  min-height: 300px;
-  max-height: 500px;
-}
+.chat-container.active { display: block; }
 
 @keyframes holographicFadeIn {
   from { opacity: 0; transform: translateY(20px) scale(0.95); }
@@ -208,7 +161,7 @@
 }
 
 .chat-messages { 
-  height: 350px; overflow-y: auto; padding: 16px; 
+  height: 300px; overflow-y: auto; padding: 20px; 
   background: linear-gradient(145deg, 
     rgba(13, 13, 21, 0.95) 0%,
     rgba(30, 63, 255, 0.08) 50%,
@@ -326,13 +279,8 @@
 }
 
 .chat-input-container { 
-  display: flex;
-  gap: 10px;
+  display: flex; gap: 12px; 
   position: relative;
-  flex-shrink: 0;
-  margin-top: 0;
-  width: 100%;
-  justify-content: center;
 }
 
 .chat-input { 
@@ -587,136 +535,22 @@ footer a:hover {
   text-shadow: 0 0 8px rgba(76, 195, 255, 0.6);
 }
 
-/* Responsive Design - Embed Optimized */
-@media (max-height: 800px) {
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 320px);
-    min-height: 280px;
-    max-height: 400px;
-  }
-  .interface-container {
-    padding: 25px 20px;
-  }
-}
-
-@media (max-height: 700px) {
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 300px);
-    min-height: 250px;
-    max-height: 350px;
-  }
-  .interface-container {
-    padding: 20px 15px;
-  }
-}
-
-@media (max-height: 600px) {
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 280px);
-    min-height: 220px;
-    max-height: 300px;
-  }
-  .interface-container {
-    padding: 15px 10px;
-  }
-  .voice-interface {
-    width: 120px;
-    height: 120px;
-    margin-bottom: 15px;
-  }
-}
-
-@media (max-height: 500px) {
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 260px);
-    min-height: 180px;
-    max-height: 250px;
-  }
-  .interface-container {
-    padding: 10px 8px;
-  }
-}
-
 @media (max-width: 768px) {
-  .interface-container { 
-    padding: 25px 15px; 
-    width: 95%;
-  }
-  .voice-interface { width: 140px; height: 140px; }
-  .ring-outer { width: 140px; height: 140px; }
-  .ring-middle { width: 100px; height: 100px; }
-  .ring-inner { width: 60px; height: 60px; }
-  .interface-title { font-size: 22px; margin-bottom: 10px; }
-  .interface-subtitle { font-size: 14px; margin-bottom: 20px; }
-  .controls { flex-direction: column; align-items: center; gap: 10px; }
-  
-  /* Chat responsive improvements */
-  .chat-container { 
-    max-width: 100%; 
-    width: 100%; 
-  }
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 280px);
-    min-height: 250px;
-    max-height: 400px;
-    padding: 12px;
-  }
-  .chat-input { 
-    padding: 10px 14px; 
-    font-size: 14px; 
-  }
+  .interface-container { padding: 40px 20px; }
+  .voice-interface { width: 160px; height: 160px; }
+  .ring-outer { width: 160px; height: 160px; }
+  .ring-middle { width: 110px; height: 110px; }
+  .ring-inner { width: 65px; height: 65px; }
+  .interface-title { font-size: 24px; }
+  .controls { flex-direction: column; align-items: center; }
   
   /* Mobile footer adjustments */
   footer {
-    padding: 0.8rem 1rem 1rem !important;
+    padding: 1rem 1rem 1.5rem !important;
   }
   
   footer p {
-    font-size: 10px !important;
-    line-height: 1.3 !important;
-  }
-}
-
-@media (max-width: 480px) {
-  .interface-container {
-    padding: 20px 10px;
-    width: 98%;
-  }
-  .interface-title { font-size: 20px; }
-  .interface-subtitle { font-size: 13px; }
-  
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 260px);
-    min-height: 200px;
-    max-height: 350px;
-    padding: 10px;
-  }
-  .chat-input { 
-    padding: 8px 12px; 
-    font-size: 13px; 
-  }
-  .send-btn { 
-    width: 36px; 
-    height: 36px; 
-    font-size: 14px; 
-  }
-}
-
-@media (max-width: 360px) {
-  .interface-container {
-    padding: 15px 8px;
-  }
-  .interface-container:has(.chat-container.active) .chat-messages,
-  .chat-container.active .chat-messages {
-    height: calc(100vh - 240px);
-    min-height: 180px;
-    max-height: 300px;
-    padding: 8px;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
   }
 }
