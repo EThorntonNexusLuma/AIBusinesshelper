@@ -11,7 +11,7 @@
   var host = (s && s.getAttribute('data-host')) || 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';
   if (!host.endsWith('/')) host += '/';
   var width = (s && s.getAttribute('data-width')) || '420px';
-  var height = (s && s.getAttribute('data-height')) || '640px';
+  var height = (s && s.getAttribute('data-height')) || '720px';
   var openByDefault = (s && s.getAttribute('data-open')) === 'true';
   var accent = (s && s.getAttribute('data-color')) || '#8b5cf6';
 
@@ -23,8 +23,9 @@
     '.nxl-ai-launcher:hover{transform:translateY(-2px)}',
     '.nxl-ai-launcher::after{content:"";position:absolute;inset:-8px;border-radius:inherit;box-shadow:0 0 32px '+accent+'55;pointer-events:none}',
     '.nxl-ai-frame{position:fixed;right:24px;bottom:100px;width:'+width+';height:'+height+';border:0;border-radius:16px;overflow:hidden;',
-    'box-shadow:0 18px 60px rgba(0,0,0,.45);z-index:2147483647;background:transparent;display:none}',
-    '@media (max-width:600px){.nxl-ai-frame{right:12px;left:12px;bottom:88px;width:auto;height:70vh}}'
+    'box-shadow:0 18px 60px rgba(0,0,0,.45);z-index:2147483647;background:transparent;display:none;max-height:calc(100vh - 120px)}',
+    '@media (max-width:600px){.nxl-ai-frame{right:12px;left:12px;bottom:88px;width:auto;height:75vh;max-height:calc(100vh - 100px)}}',
+    '@media (max-height:800px){.nxl-ai-frame{height:calc(100vh - 140px);max-height:600px}}'
   ].join('');
   document.head.appendChild(style);
 
