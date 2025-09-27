@@ -25,7 +25,6 @@ const getApiUrl = () => {
   // In production, use environment variable or show that backend is needed
   const apiUrl = import.meta.env.VITE_API_URL || '';
   
-  console.log('🔗 API URL:', apiUrl, 'DEV:', import.meta.env.DEV, 'VITE_API_URL:', import.meta.env.VITE_API_URL);
   return apiUrl;
 };
 
@@ -178,13 +177,11 @@ export const VapiAssistant: React.FC = () => {
   // Utility Functions
   const updateStatus = (text: string, className: string) => {
     setStatus({ text, className });
-    console.log(`[Status] ${text}`);
   };
 
-  const addMessage = (type: 'user' | 'ai', content: string, isTranscript = false) => {
-    const newMessage: Message = { type, content, isTranscript };
+  const addMessage = (type: 'user' | 'ai' | 'transcript', content: string) => {
+    const newMessage: Message = { type, content };
     setMessages(prev => [...prev, newMessage]);
-    console.log(`[Message] ${type}: ${content}`);
   };
 
   // Check backend status
@@ -192,16 +189,9 @@ export const VapiAssistant: React.FC = () => {
     try {
       const apiUrl = getApiUrl();
       
-      // In development, always mark as connected (uses proxy)
-      if (import.meta.env.DEV) {
-        setBackendStatus('connected');
-        return;
-      }
-      
       // In production, check if we have a backend URL
       if (!apiUrl || apiUrl === '' || apiUrl.includes('your-backend-url')) {
         setBackendStatus('disconnected');
-        console.log('❌ No backend URL configured for production');
         return;
       }
       
@@ -216,14 +206,11 @@ export const VapiAssistant: React.FC = () => {
       
       if (response.ok) {
         setBackendStatus('connected');
-        console.log('✅ Backend connected:', apiUrl);
       } else {
         setBackendStatus('disconnected');
-        console.log('❌ Backend not responding:', apiUrl, response.status);
       }
     } catch (error) {
       setBackendStatus('disconnected');
-      console.log('❌ Backend connection failed:', error);
     }
   };
 
@@ -315,7 +302,6 @@ export const VapiAssistant: React.FC = () => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
       setMicPermission('granted');
-      console.log('[Mic] Permission granted');
       return true;
     } catch (error) {
       setMicPermission('denied');
@@ -338,36 +324,30 @@ export const VapiAssistant: React.FC = () => {
     try {
       const vapi = new Vapi(PUBLIC_KEY);
       vapiRef.current = vapi;
-      console.log('[Vapi] Client initialized');
 
       // Event Handlers
       vapi.on('call-start', () => {
-        console.log('[Vapi] Call started');
         setIsConnected(true);
         updateStatus('🔴 Connected - Speak now!', 'listening');
       });
 
       vapi.on('call-end', () => {
-        console.log('[Vapi] Call ended');
         setIsConnected(false);
         setIsListening(false);
         updateStatus('✅ Ready to assist', 'inactive');
       });
 
       vapi.on('speech-start', () => {
-        console.log('[Vapi] Speech started');
         setIsListening(true);
         updateStatus('🎤 Listening...', 'listening');
       });
 
       vapi.on('speech-end', () => {
-        console.log('[Vapi] Speech ended');
         setIsListening(false);
         updateStatus('🤔 Processing...', 'thinking');
       });
 
       vapi.on('message', (message: any) => {
-        console.log('[Vapi] Message received:', message);
 
         // Handle transcripts
         if (message.type === 'transcript' && message.transcriptType === 'final') {
@@ -401,7 +381,6 @@ export const VapiAssistant: React.FC = () => {
         addMessage('ai', 'Sorry, I encountered an error. Please try again or switch to text mode.');
       });
 
-      console.log('[Vapi] Event listeners attached');
     } catch (error) {
       console.error('[Vapi] Initialization failed:', error);
       updateStatus('❌ Failed to initialize voice', 'error');
@@ -410,7 +389,6 @@ export const VapiAssistant: React.FC = () => {
 
   // Voice Control
   const startVoice = async () => {
-    console.log('[Voice] Starting voice mode');
 
     if (micPermission === 'prompt') {
       const granted = await requestMicPermission();
@@ -437,7 +415,6 @@ export const VapiAssistant: React.FC = () => {
     try {
       updateStatus('🎤 Connecting...', 'thinking');
       await vapiRef.current.start(ASSISTANT_ID);
-      console.log('[Voice] Started successfully');
     } catch (error) {
       console.error('[Voice] Start failed:', error);
       updateStatus('❌ Failed to connect', 'error');
@@ -446,7 +423,6 @@ export const VapiAssistant: React.FC = () => {
   };
 
   const stopVoice = () => {
-    console.log('[Voice] Stopping voice mode');
     try {
       if (vapiRef.current && isConnected) {
         vapiRef.current.stop();
@@ -498,7 +474,6 @@ export const VapiAssistant: React.FC = () => {
     const streamUrl = `${apiUrl}/api/text/stream`;
 
     try {
-      console.log('Attempting to stream message to:', streamUrl);
       
       const response = await fetch(streamUrl, {
         method: 'POST',
@@ -506,7 +481,6 @@ export const VapiAssistant: React.FC = () => {
         body: JSON.stringify({ messages: openAIMessages })
       });
 
-      console.log('Response status:', response.status);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -610,7 +584,6 @@ export const VapiAssistant: React.FC = () => {
       
       try {
         const chatUrl = `${apiUrl}/api/chat`;
-        console.log('Fallback chat URL:', chatUrl);
         const fallbackResponse = await fetch(chatUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -644,14 +617,12 @@ export const VapiAssistant: React.FC = () => {
       const data = await response.json();
       
       if (data.lead && data.lead.consent) {
-        console.log('Lead extracted:', data.lead);
         // Save to existing lead submission endpoint
         await fetch(`${getApiUrl()}/api/leads`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ lead: data.lead })
         });
-        console.log('Lead saved successfully');
       }
     } catch (error) {
       console.error('Lead extraction error:', error);
@@ -663,8 +634,6 @@ export const VapiAssistant: React.FC = () => {
     const message = textInput.trim();
     if (!message) return;
 
-    console.log('📤 Sending text message:', message);
-    console.log('📊 Current messages count:', messages.length);
 
     addMessage('user', message);
     setTextInput('');
@@ -672,7 +641,6 @@ export const VapiAssistant: React.FC = () => {
     // If voice is connected, prefer sending to Vapi call
     if (isConnected && vapiRef.current) {
       try {
-        console.log('📞 Sending via Vapi voice connection');
         vapiRef.current.send({
           type: 'add-message',
           message: { role: 'user', content: message }
@@ -684,7 +652,6 @@ export const VapiAssistant: React.FC = () => {
     }
 
     // Use streaming for better UX in text mode
-    console.log('💬 Using text streaming mode');
     await streamMessage(message, messages);
   };
 
@@ -830,13 +797,11 @@ export const VapiAssistant: React.FC = () => {
           {/* Status */}
           <div className={`status ${status.className}`}> 
             {status.text}
-            {!import.meta.env.DEV && (
-              <span className={`backend-status ${backendStatus}`}>
-                {backendStatus === 'checking' && ' • Checking backend...'}
-                {backendStatus === 'connected' && ' • Backend connected ✅'}
-                {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
-              </span>
-            )}
+            <span className={`backend-status ${backendStatus}`}>
+              {backendStatus === 'checking' && ' • Checking backend...'}
+              {backendStatus === 'connected' && ' • Backend connected ✅'}
+              {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
+            </span>
           </div>
         </div>
       </div>
