@@ -816,22 +816,23 @@ export const VapiAssistant: React.FC = () => {
                 onKeyPress={handleKeyPress}
               />
               <button
-                className="send-btn"
+                className="send-btn slim-btn"
                 onClick={sendTextMessage}
                 disabled={!textInput.trim()}
                 aria-label="Send message"
+                style={{ minWidth: 32, height: 32, padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #7A3FFF, #4CC3FF)', color: '#fff', border: 'none', boxShadow: '0 1px 6px rgba(76,195,255,0.18)' }}
               >
-                <Send size={20} />
+                <Send size={16} />
               </button>
               {/* Microphone icon only for voice mode, not for chat */}
               {currentMode === 'voice' && (
                 <button
-                  className="mic-btn"
+                  className="mic-btn slim-btn"
                   onClick={startVoice}
                   aria-label="Start voice"
-                  style={{ marginLeft: 8 }}
+                  style={{ minWidth: 32, height: 32, padding: 0, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #7A3FFF, #4CC3FF)', color: '#fff', border: 'none', boxShadow: '0 1px 6px rgba(76,195,255,0.18)', marginLeft: 6 }}
                 >
-                  <Mic size={20} />
+                  <Mic size={16} />
                 </button>
               )}
             </div>

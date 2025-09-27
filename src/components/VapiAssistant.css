@@ -1,3 +1,21 @@
+.slim-btn {
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, #7A3FFF, #4CC3FF) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 1px 6px rgba(76,195,255,0.18) !important;
+  transition: background 0.2s;
+}
+.slim-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /**
  * © 2025 Nexus Luma - All Rights Reserved
  * LumX AI Assistant Holographic Interface Styles
