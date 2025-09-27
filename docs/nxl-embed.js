@@ -9,7 +9,7 @@
   // Create the floating icon
   var icon = document.createElement('div');
   icon.innerHTML = '💬';
-  icon.style.cssText = 'position:fixed!important;bottom:30px!important;right:30px!important;width:70px!important;height:70px!important;border-radius:50%!important;background:linear-gradient(135deg,#7A3FFF,#4CC3FF)!important;color:white!important;font-size:30px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 8px 32px rgba(30,63,255,0.4)!important;transition:transform 0.3s ease!important;';
+  icon.style.cssText = 'position:fixed!important;bottom:30px!important;right:30px!important;width:70px!important;height:70px!important;border-radius:50%!important;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)!important;color:white!important;font-size:32px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 8px 32px rgba(76,195,255,0.5)!important;transition:all 0.3s ease!important;border:2px solid rgba(76,195,255,0.3)!important;backdrop-filter:blur(10px)!important;';
   
   // Create the iframe
   var iframe = document.createElement('iframe');
@@ -43,13 +43,17 @@
   document.body.appendChild(icon);
   document.body.appendChild(iframe);
 
-  // Hover effect
+  // Enhanced hover effects
   icon.addEventListener('mouseenter', function() {
-    icon.style.transform = 'scale(1.1)';
+    icon.style.transform = 'scale(1.15)';
+    icon.style.boxShadow = '0 12px 40px rgba(76,195,255,0.7)';
+    icon.style.background = 'linear-gradient(135deg,#4CC3FF,#1E3FFF,#7A3FFF)';
   });
   
   icon.addEventListener('mouseleave', function() {
     icon.style.transform = 'scale(1)';
+    icon.style.boxShadow = '0 8px 32px rgba(76,195,255,0.5)';
+    icon.style.background = 'linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)';
   });
 
 })();
