@@ -26,13 +26,15 @@
     'align-items: center !important',
     'justify-content: center !important',
     'cursor: pointer !important',
-    'z-index: 999999 !important',
+    'z-index: 2147483647 !important',
     'box-shadow: 0 8px 32px rgba(76, 195, 255, 0.5) !important',
     'transition: all 0.3s ease !important',
     'border: 2px solid rgba(76, 195, 255, 0.3) !important',
     'backdrop-filter: blur(10px) !important',
     'user-select: none !important',
-    'font-family: Arial, sans-serif !important'
+    'font-family: Arial, sans-serif !important',
+    'pointer-events: auto !important',
+    'touch-action: manipulation !important'
   ].join('; ');
   
   // Create the iframe container
@@ -106,11 +108,18 @@
     document.body.style.overflow = '';
   }
 
-  // Event listeners
-  icon.addEventListener('click', function(e) {
+  // Event listeners with enhanced clickability
+  function handleIconClick(e) {
     e.preventDefault();
     e.stopPropagation();
+    console.log('NXL Widget: Icon clicked');
     openWidget();
+  }
+
+  icon.addEventListener('click', handleIconClick);
+  icon.addEventListener('touchend', handleIconClick);
+  icon.addEventListener('mousedown', function(e) {
+    e.preventDefault();
   });
 
   closeButton.addEventListener('click', function(e) {
@@ -172,14 +181,23 @@
 
   // Add to DOM when ready
   function addToDom() {
+    console.log('NXL Widget: Adding to DOM');
     document.body.appendChild(icon);
     document.body.appendChild(iframeContainer);
+    
+    // Force a reflow to ensure styles are applied
+    icon.offsetHeight;
+    
+    console.log('NXL Widget: Added successfully. Icon visibility:', getComputedStyle(icon).display);
+    console.log('NXL Widget: Icon position:', getComputedStyle(icon).position);
+    console.log('NXL Widget: Icon z-index:', getComputedStyle(icon).zIndex);
   }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', addToDom);
   } else {
-    addToDom();
+    // Add a small delay to ensure page is fully rendered
+    setTimeout(addToDom, 100);
   }
 
 })();
