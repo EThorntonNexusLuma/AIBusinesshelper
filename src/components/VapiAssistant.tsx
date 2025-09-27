@@ -749,11 +749,13 @@ export const VapiAssistant: React.FC = () => {
             </div>
           )}
 
-          {/* Interface Text */}
-          <div className="interface-text">
-            <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
-            <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
-          </div>
+          {/* Interface Text - Only show in voice mode */}
+          {currentMode === 'voice' && (
+            <div className="interface-text">
+              <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
+              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
+            </div>
+          )}
 
           {/* Controls */}
           <div className="controls">
