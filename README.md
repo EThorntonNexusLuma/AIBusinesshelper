@@ -197,3 +197,4 @@ Need help? Check out:
 ---
 
 Made with ❤️ by [Nexus Luma](https://github.com/EThorntonNexusLuma)# Backend connected to Railway
+Backend connected to Vercel: https://ai-businesshelper12.vercel.app
