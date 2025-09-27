@@ -4,8 +4,8 @@ import bodyParser from 'body-parser';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
 
-// Load environment variables
-dotenv.config();
+// Load environment variables from server/.env
+dotenv.config({ path: './server/.env' });
 
 const app = express();
 
