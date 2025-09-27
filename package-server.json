@@ -1,0 +1,21 @@
+{
+  "type": "module",
+  "name": "lumx-api-server",
+  "version": "1.0.0",
+  "description": "Backend API server for LumX AI Assistant lead generation",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "openai": "^4.56.0",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": ["ai", "assistant", "lead-generation", "api"],
+  "author": "Nexus Luma",
+  "license": "MIT"
+}
