@@ -722,7 +722,7 @@ export const VapiAssistant: React.FC = () => {
       </div>
 
       {/* Holographic Interface */}
-      <div className={`holographic-interface ${isOpen ? 'active' : ''}`}>
+      <div className={`holographic-interface ${isOpen ? 'active' : ''}`}> 
         <button 
           className="close-btn"
           onClick={() => {
@@ -739,7 +739,7 @@ export const VapiAssistant: React.FC = () => {
           <div className="voice-interface">
             <div className="voice-ring ring-outer"></div>
             <div className="voice-ring ring-middle"></div>
-            <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
+            <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
               <Mic 
                 className={`mic-icon ${isListening ? 'listening' : ''}`}
                 size={30}
@@ -747,11 +747,13 @@ export const VapiAssistant: React.FC = () => {
             </div>
           </div>
 
-          {/* Interface Text */}
-          <div className="interface-text">
-            <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
-            <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
-          </div>
+          {/* Only show welcome/speak text in voice mode */}
+          {currentMode === 'voice' && (
+            <div className="interface-text">
+              <h1 className="interface-title">Welcome To LumX Your AI Assistant</h1>
+              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
+            </div>
+          )}
 
           {/* Controls */}
           <div className="controls">
@@ -770,46 +772,48 @@ export const VapiAssistant: React.FC = () => {
           </div>
 
           {/* Voice Visualizer */}
-          <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
+          <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
             {[...Array(5)].map((_, i) => (
               <div key={i} className="voice-bar"></div>
             ))}
           </div>
 
-          {/* Chat Container */}
-          <div className={`chat-container ${currentMode === 'text' ? 'active' : ''}`}>
-            <div className="chat-messages" ref={chatMessagesRef}>
-              {messages.map((message, index) => (
-                <div 
-                  key={index}
-                  className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+          {/* Chat Container - Only chat interface and input for text mode */}
+          {currentMode === 'text' && (
+            <div className="chat-container active">
+              <div className="chat-messages" ref={chatMessagesRef}>
+                {messages.map((message, index) => (
+                  <div 
+                    key={index}
+                    className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                  >
+                    {message.content}
+                  </div>
+                ))}
+              </div>
+              <div className="chat-input-container chat-input-row">
+                <input
+                  type="text"
+                  className="chat-input chat-input-min"
+                  placeholder="Type your message..."
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+                <button
+                  className="send-btn send-btn-nomargin"
+                  onClick={sendTextMessage}
+                  disabled={!textInput.trim()}
+                  aria-label="Send message"
                 >
-                  {message.content}
-                </div>
-              ))}
+                  <Send size={16} />
+                </button>
+              </div>
             </div>
-            <div className="chat-input-container">
-              <input
-                type="text"
-                className="chat-input"
-                placeholder="Type your message..."
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-              />
-              <button
-                className="send-btn"
-                onClick={sendTextMessage}
-                disabled={!textInput.trim()}
-                aria-label="Send message"
-              >
-                <Send size={16} />
-              </button>
-            </div>
-          </div>
+          )}
 
           {/* Status */}
-          <div className={`status ${status.className}`}>
+          <div className={`status ${status.className}`}> 
             {status.text}
             {!import.meta.env.DEV && (
               <span className={`backend-status ${backendStatus}`}>
