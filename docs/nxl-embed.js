@@ -1,97 +1,190 @@
-/* Nexus Luma AI Assistant - 380x700px Corner Widget *//* Nexus Luma AI Assistant - 380x700px Corner Widget *//* Nexus Luma AI Assistant - 380x700px Corner Widget */
+/* Nexus Luma AI Assistant - Fullscreen Widget with Close Button *//* Nexus Luma AI Assistant - 380x700px Corner Widget *//* Nexus Luma AI Assistant - 380x700px Corner Widget *//* Nexus Luma AI Assistant - 380x700px Corner Widget */
 
 (function() {
 
+  if (window.__NXL_EMBED_LOADED__) return;(function() {
+
+  window.__NXL_EMBED_LOADED__ = true;
+
   if (window.__NXL_WIDGET_LOADED__) return;(function() {(function() {
-
-  window.__NXL_WIDGET_LOADED__ = true;
-
-  if (window.__NXL_WIDGET_LOADED__) return;  if (window.__NXL_WIDGET_LOADED__) return;
 
   // Create the floating chat icon
 
-  var icon = document.createElement('div');  window.__NXL_WIDGET_LOADED__ = true;  window.__NXL_WIDGET_LOADED__ = true;
+  var icon = document.createElement('div');  window.__NXL_WIDGET_LOADED__ = true;
 
   icon.innerHTML = '💬';
 
-  icon.style.cssText = 'position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF);color:white;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999999;box-shadow:0 4px 20px rgba(76,195,255,0.5);transition:all 0.3s ease;border:2px solid rgba(76,195,255,0.3);user-select:none;';
+  icon.style.cssText = 'position:fixed;bottom:30px;right:30px;width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF);color:white;font-size:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999999;box-shadow:0 8px 32px rgba(76,195,255,0.5);transition:all 0.3s ease;border:2px solid rgba(76,195,255,0.3);backdrop-filter:blur(10px);user-select:none;';  if (window.__NXL_WIDGET_LOADED__) return;  if (window.__NXL_WIDGET_LOADED__) return;
 
   
 
-  // Create the corner popup widget (380x700px)  // Create the floating chat icon  // Create the floating chat icon
+  // Create fullscreen overlay  // Create the floating chat icon
 
-  var popup = document.createElement('div');
+  var overlay = document.createElement('div');
 
-  popup.style.cssText = 'position:fixed;bottom:90px;right:20px;width:380px;height:700px;background:rgba(13,13,21,0.95);border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,0.4);z-index:999998;display:none;border:1px solid rgba(76,195,255,0.4);overflow:hidden;backdrop-filter:blur(20px);';  var icon = document.createElement('div');  var icon = document.createElement('div');
-
-  
-
-  // Create iframe  icon.innerHTML = '💬';  icon.innerHTML = '💬';
-
-  var iframe = document.createElement('iframe');
-
-  iframe.src = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';  icon.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;width:60px!important;height:60px!important;border-radius:50%!important;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)!important;color:white!important;font-size:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 4px 20px rgba(76,195,255,0.5)!important;transition:all 0.3s ease!important;border:2px solid rgba(76,195,255,0.3)!important;user-select:none!important;';  icon.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;width:60px!important;height:60px!important;border-radius:50%!important;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)!important;color:white!important;font-size:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 4px 20px rgba(76,195,255,0.5)!important;transition:all 0.3s ease!important;border:2px solid rgba(76,195,255,0.3)!important;user-select:none!important;';
-
-  iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:20px;';
-
-  iframe.allow = 'microphone';    
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(13,13,21,0.98);z-index:999998;display:none;backdrop-filter:blur(20px);';  var icon = document.createElement('div');  window.__NXL_WIDGET_LOADED__ = true;  window.__NXL_WIDGET_LOADED__ = true;
 
   
 
-  popup.appendChild(iframe);  // Create the corner popup widget (380x700px)  // Create the corner popup widget (380x700px)
+  // Create close button  icon.innerHTML = '💬';
+
+  var closeBtn = document.createElement('div');
+
+  closeBtn.innerHTML = '✕';  icon.style.cssText = 'position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF);color:white;font-size:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:999999;box-shadow:0 4px 20px rgba(76,195,255,0.5);transition:all 0.3s ease;border:2px solid rgba(76,195,255,0.3);user-select:none;';
+
+  closeBtn.style.cssText = 'position:absolute;top:20px;right:20px;width:50px;height:50px;background:rgba(255,255,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;color:white;z-index:999999;transition:all 0.3s ease;border:2px solid rgba(76,195,255,0.3);backdrop-filter:blur(10px);';
+
+    
+
+  // Create the iframe
+
+  var iframe = document.createElement('iframe');  // Create the corner popup widget (380x700px)  // Create the floating chat icon  // Create the floating chat icon
+
+  iframe.src = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';
+
+  iframe.style.cssText = 'width:100%;height:100%;border:none;';  var popup = document.createElement('div');
+
+  iframe.allow = 'microphone';
+
+    popup.style.cssText = 'position:fixed;bottom:90px;right:20px;width:380px;height:700px;background:rgba(13,13,21,0.95);border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,0.4);z-index:999998;display:none;border:1px solid rgba(76,195,255,0.4);overflow:hidden;backdrop-filter:blur(20px);';  var icon = document.createElement('div');  var icon = document.createElement('div');
+
+  // Append elements
+
+  overlay.appendChild(closeBtn);  
+
+  overlay.appendChild(iframe);
+
+    // Create iframe  icon.innerHTML = '💬';  icon.innerHTML = '💬';
+
+  var isOpen = false;
+
+    var iframe = document.createElement('iframe');
+
+  // Open widget function
+
+  function openWidget() {  iframe.src = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';  icon.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;width:60px!important;height:60px!important;border-radius:50%!important;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)!important;color:white!important;font-size:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 4px 20px rgba(76,195,255,0.5)!important;transition:all 0.3s ease!important;border:2px solid rgba(76,195,255,0.3)!important;user-select:none!important;';  icon.style.cssText = 'position:fixed!important;bottom:20px!important;right:20px!important;width:60px!important;height:60px!important;border-radius:50%!important;background:linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)!important;color:white!important;font-size:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 4px 20px rgba(76,195,255,0.5)!important;transition:all 0.3s ease!important;border:2px solid rgba(76,195,255,0.3)!important;user-select:none!important;';
+
+    isOpen = true;
+
+    overlay.style.display = 'block';  iframe.style.cssText = 'width:100%;height:100%;border:none;border-radius:20px;';
+
+    icon.style.display = 'none';
+
+    // Smooth fade-in  iframe.allow = 'microphone';    
+
+    overlay.style.opacity = '0';
+
+    setTimeout(function() {  
+
+      overlay.style.transition = 'opacity 0.3s ease';
+
+      overlay.style.opacity = '1';  popup.appendChild(iframe);  // Create the corner popup widget (380x700px)  // Create the corner popup widget (380x700px)
+
+    }, 10);
+
+  }  
 
   
 
-  var isOpen = false;  var popup = document.createElement('div');  var popup = document.createElement('div');
+  // Close widget function  var isOpen = false;  var popup = document.createElement('div');  var popup = document.createElement('div');
+
+  function closeWidget() {
+
+    isOpen = false;  
+
+    overlay.style.opacity = '0';
+
+    setTimeout(function() {  // Toggle function  popup.style.cssText = 'position:fixed!important;bottom:90px!important;right:20px!important;width:380px!important;height:700px!important;background:rgba(13,13,21,0.95)!important;border-radius:20px!important;box-shadow:0 10px 50px rgba(0,0,0,0.4)!important;z-index:999998!important;display:none!important;border:1px solid rgba(76,195,255,0.4)!important;overflow:hidden!important;backdrop-filter:blur(20px)!important;';  popup.style.cssText = 'position:fixed!important;bottom:90px!important;right:20px!important;width:380px!important;height:700px!important;background:rgba(13,13,21,0.95)!important;border-radius:20px!important;box-shadow:0 10px 50px rgba(0,0,0,0.4)!important;z-index:999998!important;display:none!important;border:1px solid rgba(76,195,255,0.4)!important;overflow:hidden!important;backdrop-filter:blur(20px)!important;';
+
+      overlay.style.display = 'none';
+
+      icon.style.display = 'flex';  function toggle() {
+
+      icon.innerHTML = '💬';
+
+    }, 300);    isOpen = !isOpen;    
+
+  }
+
+      if (isOpen) {
+
+  // Event listeners
+
+  icon.addEventListener('click', function(e) {      popup.style.display = 'block';  // Create iframe with proper scaling  // Create iframe
+
+    e.stopPropagation();
+
+    openWidget();      icon.innerHTML = '✕';
+
+  });
+
+        // Smooth animation  var iframe = document.createElement('iframe');  var iframe = document.createElement('iframe');
+
+  closeBtn.addEventListener('click', function(e) {
+
+    e.stopPropagation();      popup.style.opacity = '0';
+
+    closeWidget();
+
+  });      popup.style.transform = 'translateY(20px) scale(0.9)';  iframe.src = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';  iframe.src = HOST;
 
   
 
-  // Toggle function  popup.style.cssText = 'position:fixed!important;bottom:90px!important;right:20px!important;width:380px!important;height:700px!important;background:rgba(13,13,21,0.95)!important;border-radius:20px!important;box-shadow:0 10px 50px rgba(0,0,0,0.4)!important;z-index:999998!important;display:none!important;border:1px solid rgba(76,195,255,0.4)!important;overflow:hidden!important;backdrop-filter:blur(20px)!important;';  popup.style.cssText = 'position:fixed!important;bottom:90px!important;right:20px!important;width:380px!important;height:700px!important;background:rgba(13,13,21,0.95)!important;border-radius:20px!important;box-shadow:0 10px 50px rgba(0,0,0,0.4)!important;z-index:999998!important;display:none!important;border:1px solid rgba(76,195,255,0.4)!important;overflow:hidden!important;backdrop-filter:blur(20px)!important;';
+  // Enhanced hover effects for icon      popup.style.transition = 'all 0.3s ease';
 
-  function toggle() {
+  icon.addEventListener('mouseenter', function() {
 
-    isOpen = !isOpen;    
+    icon.style.transform = 'scale(1.15)';      setTimeout(function() {  iframe.style.cssText = 'width:100%!important;height:100%!important;border:none!important;border-radius:20px!important;transform:scale(1)!important;transform-origin:top left!important;';  iframe.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;border:none!important;z-index:999998!important;display:none!important;';
 
-    if (isOpen) {
+    icon.style.boxShadow = '0 12px 40px rgba(76,195,255,0.7)';
 
-      popup.style.display = 'block';  // Create iframe with proper scaling  // Create iframe
+    icon.style.background = 'linear-gradient(135deg,#4CC3FF,#1E3FFF,#7A3FFF)';        popup.style.opacity = '1';
 
-      icon.innerHTML = '✕';
+  });
 
-      // Smooth animation  var iframe = document.createElement('iframe');  var iframe = document.createElement('iframe');
+          popup.style.transform = 'translateY(0) scale(1)';  iframe.allow = 'microphone';  iframe.allow = 'microphone; camera; autoplay';
 
-      popup.style.opacity = '0';
+  icon.addEventListener('mouseleave', function() {
 
-      popup.style.transform = 'translateY(20px) scale(0.9)';  iframe.src = 'https://ethorntonnexusluma.github.io/AIBusinesshelper/';  iframe.src = HOST;
+    icon.style.transform = 'scale(1)';      }, 10);
 
-      popup.style.transition = 'all 0.3s ease';
+    icon.style.boxShadow = '0 8px 32px rgba(76,195,255,0.5)';
 
-      setTimeout(function() {  iframe.style.cssText = 'width:100%!important;height:100%!important;border:none!important;border-radius:20px!important;transform:scale(1)!important;transform-origin:top left!important;';  iframe.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;border:none!important;z-index:999998!important;display:none!important;';
+    icon.style.background = 'linear-gradient(135deg,#1E3FFF,#4CC3FF,#7A3FFF)';    } else {  
 
-        popup.style.opacity = '1';
+  });
 
-        popup.style.transform = 'translateY(0) scale(1)';  iframe.allow = 'microphone';  iframe.allow = 'microphone; camera; autoplay';
+        popup.style.opacity = '0';
 
-      }, 10);
+  // Close button hover effects
 
-    } else {  
+  closeBtn.addEventListener('mouseenter', function() {      popup.style.transform = 'translateY(20px) scale(0.9)';  popup.appendChild(iframe);  // Toggle function
 
-      popup.style.opacity = '0';
+    closeBtn.style.background = 'rgba(255,255,255,0.2)';
 
-      popup.style.transform = 'translateY(20px) scale(0.9)';  popup.appendChild(iframe);  // Toggle function
+    closeBtn.style.transform = 'scale(1.1)';      setTimeout(function() {
 
-      setTimeout(function() {
+  });
 
-        popup.style.display = 'none';    function toggle() {
+          popup.style.display = 'none';    function toggle() {
 
-        icon.innerHTML = '💬';
+  closeBtn.addEventListener('mouseleave', function() {
 
-      }, 300);  var isOpen = false;    if (iframe.style.display === 'none') {
+    closeBtn.style.background = 'rgba(255,255,255,0.1)';        icon.innerHTML = '💬';
 
-    }
+    closeBtn.style.transform = 'scale(1)';
 
-  }        iframe.style.display = 'block';
+  });      }, 300);  var isOpen = false;    if (iframe.style.display === 'none') {
 
+  
+
+  // Add to page    }
+
+  document.body.appendChild(icon);
+
+  document.body.appendChild(overlay);  }        iframe.style.display = 'block';
+
+})();
   
 
   // Event listeners  // Toggle function      icon.style.display = 'none';
