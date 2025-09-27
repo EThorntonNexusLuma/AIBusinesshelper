@@ -76,35 +76,10 @@
   
   console.log('[NXL] Iframe created with source:', HOST);
 
-  // Create close button
-  var closeButton = document.createElement('div');
-  closeButton.id = 'nxl-close-button';
-  closeButton.innerHTML = '✕';
-  closeButton.style.cssText = [
-    'position: absolute !important',
-    'top: 20px !important',
-    'right: 20px !important',
-    'width: 50px !important',
-    'height: 50px !important',
-    'border-radius: 50% !important',
-    'background: rgba(255, 255, 255, 0.9) !important',
-    'color: #333 !important',
-    'font-size: 24px !important',
-    'display: flex !important',
-    'align-items: center !important',
-    'justify-content: center !important',
-    'cursor: pointer !important',
-    'z-index: 999999 !important',
-    'box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important',
-    'transition: all 0.3s ease !important',
-    'user-select: none !important',
-    'font-family: Arial, sans-serif !important',
-    'font-weight: bold !important'
-  ].join('; ');
+  console.log('[NXL] Using React component close button only');
 
   // Assemble components
   iframeContainer.appendChild(iframe);
-  iframeContainer.appendChild(closeButton);
 
   // Widget control functions with detailed logging
   function openWidget() {
@@ -264,12 +239,6 @@
   
   console.log('[NXL] Click event listener attached to icon');
 
-  closeButton.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    closeWidget();
-  });
-
   // Close on background click
   iframeContainer.addEventListener('click', function(e) {
     if (e.target === iframeContainer) {
@@ -308,18 +277,7 @@
     }
   });
 
-  // Close button hover effects
-  closeButton.addEventListener('mouseenter', function() {
-    closeButton.style.background = 'rgba(255, 255, 255, 1) !important';
-    closeButton.style.transform = 'scale(1.1) !important';
-    closeButton.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.4) !important';
-  });
-
-  closeButton.addEventListener('mouseleave', function() {
-    closeButton.style.background = 'rgba(255, 255, 255, 0.9) !important';
-    closeButton.style.transform = 'scale(1) !important';
-    closeButton.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3) !important';
-  });
+  // React component handles close button styling
 
   // Add to DOM with thorough debugging
   function addToDom() {

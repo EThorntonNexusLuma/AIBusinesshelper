@@ -95,46 +95,10 @@
   
   console.log('[NXL Corner] Iframe created');
   
-  // Create close button for corner widget
-  var closeButton = document.createElement('div');
-  closeButton.id = 'nxl-corner-close';
-  closeButton.innerHTML = '✕';
-  closeButton.style.cssText = [
-    'position: absolute !important',
-    'top: 12px !important',
-    'right: 12px !important',
-    'width: 32px !important',
-    'height: 32px !important',
-    'border-radius: 50% !important',
-    'background: rgba(255, 255, 255, 0.9) !important',
-    'color: #333 !important',
-    'font-size: 18px !important',
-    'display: flex !important',
-    'align-items: center !important',
-    'justify-content: center !important',
-    'cursor: pointer !important',
-    'z-index: 999999 !important',
-    'box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important',
-    'transition: all 0.2s ease !important',
-    'user-select: none !important',
-    'font-family: Arial, sans-serif !important',
-    'font-weight: bold !important'
-  ].join('; ');
-  
-  // Close button hover effects
-  closeButton.addEventListener('mouseenter', function() {
-    closeButton.style.background = 'rgba(255, 255, 255, 1)';
-    closeButton.style.transform = 'scale(1.1)';
-  });
-  
-  closeButton.addEventListener('mouseleave', function() {
-    closeButton.style.background = 'rgba(255, 255, 255, 0.9)';
-    closeButton.style.transform = 'scale(1)';
-  });
+  console.log('[NXL Corner] Using React component close button only');
   
   // Assemble the widget
   widgetContainer.appendChild(iframe);
-  widgetContainer.appendChild(closeButton);
   
   // Widget control functions
   function openCornerWidget() {
@@ -227,12 +191,7 @@
   // Event listeners
   icon.addEventListener('click', handleIconClick);
   
-  closeButton.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('[NXL Corner] Close button clicked');
-    closeCornerWidget();
-  });
+  // React component handles close button
   
   // Close on Escape key
   document.addEventListener('keydown', function(e) {
