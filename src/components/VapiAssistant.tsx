@@ -159,7 +159,7 @@ export const VapiAssistant: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [currentMode, setCurrentMode] = useState<'voice' | 'text'>('voice');
-  const [status, setStatus] = useState({ text: 'Ready to assist', className: 'inactive' });
+    const [status, setStatus] = useState({ text: 'Ready to assist', className: 'inactive' });
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
@@ -711,6 +711,29 @@ export const VapiAssistant: React.FC = () => {
 
   return (
     <>
+      <>
+        {/* Slim Mode Switch - Always visible when assistant is open */}
+        {isOpen && (
+          <div className="mode-switch-container">
+            <div className="mode-switch">
+              <button
+                className={`mode-btn${currentMode === 'voice' ? ' active' : ''}`}
+                onClick={() => handleModeChange('voice')}
+                aria-label="Switch to Voice Mode"
+              >
+                <Mic size={16} style={{ marginRight: 4 }} /> Voice
+              </button>
+              <button
+                className={`mode-btn${currentMode === 'text' ? ' active' : ''}`}
+                onClick={() => handleModeChange('text')}
+                aria-label="Switch to Chat Mode"
+              >
+                <span style={{ fontSize: 16, marginRight: 4 }}>💬</span> Chat
+              </button>
+            </div>
+          </div>
+        )}
+
       {/* Floating Icon - Only show in voice mode */}
       {currentMode === 'voice' && (
         <div 
@@ -798,8 +821,19 @@ export const VapiAssistant: React.FC = () => {
                 disabled={!textInput.trim()}
                 aria-label="Send message"
               >
-                <Send size={16} />
+                <Send size={20} />
               </button>
+              {/* Microphone icon only for voice mode, not for chat */}
+              {currentMode === 'voice' && (
+                <button
+                  className="mic-btn"
+                  onClick={startVoice}
+                  aria-label="Start voice"
+                  style={{ marginLeft: 8 }}
+                >
+                  <Mic size={20} />
+                </button>
+              )}
             </div>
           </div>
 
