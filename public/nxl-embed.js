@@ -8,7 +8,7 @@
 
   // Create the floating icon
   var icon = document.createElement('div');
-  icon.innerHTML = '🎤';
+  icon.innerHTML = '💬';
   icon.style.cssText = 'position:fixed!important;bottom:30px!important;right:30px!important;width:70px!important;height:70px!important;border-radius:50%!important;background:linear-gradient(135deg,#7A3FFF,#4CC3FF)!important;color:white!important;font-size:30px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important;z-index:999999!important;box-shadow:0 8px 32px rgba(30,63,255,0.4)!important;transition:transform 0.3s ease!important;';
   
   // Create the iframe
