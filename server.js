@@ -11,7 +11,14 @@ const app = express();
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:3000'],
+  origin: [
+    'http://localhost:5173', 
+    'http://localhost:5174', 
+    'http://localhost:5175', 
+    'http://localhost:3000',
+    'https://ethorntonexusluma.github.io',
+    /^https:\/\/.*\.vercel\.app$/
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: false
@@ -200,6 +207,21 @@ app.post('/api/leads', async (req, res) => {
     console.error('/api/leads error:', e?.message);
     res.status(500).json({ error: 'lead_submit_failed' });
   }
+});
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'LumX AI Assistant API Server',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/health',
+      chat: '/api/chat',
+      textStream: '/api/text/stream'
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Health check endpoint
