@@ -711,15 +711,17 @@ export const VapiAssistant: React.FC = () => {
 
   return (
     <>
-      {/* Floating Icon */}
-      <div 
-        className="floating-icon"
-        onClick={() => setIsOpen(true)}
-        role="button"
-        aria-label="Open AI Assistant"
-      >
-        <Mic size={30} color="white" />
-      </div>
+      {/* Floating Icon - Only show in voice mode */}
+      {currentMode === 'voice' && (
+        <div 
+          className="floating-icon"
+          onClick={() => setIsOpen(true)}
+          role="button"
+          aria-label="Open AI Assistant"
+        >
+          <Mic size={30} color="white" />
+        </div>
+      )}
 
       {/* Holographic Interface */}
       <div className={`holographic-interface ${isOpen ? 'active' : ''}`}>
@@ -757,21 +759,8 @@ export const VapiAssistant: React.FC = () => {
             </div>
           )}
 
-          {/* Controls */}
-          <div className="controls">
-            <button 
-              className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
-              onClick={() => handleModeChange('voice')}
-            >
-              Voice Chat
-            </button>
-            <button 
-              className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
-              onClick={() => handleModeChange('text')}
-            >
-              Text Chat
-            </button>
-          </div>
+          {/* Controls - Only show in voice mode */}
+          {/* No controls in text mode for max chat space */}
 
           {/* Voice Visualizer - Only show in voice mode */}
           {currentMode === 'voice' && (
