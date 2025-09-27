@@ -10,7 +10,7 @@
   
   // Create the corner popup (NOT FULLSCREEN)
   var popup = document.createElement('div');
-  popup.style.cssText = 'position:fixed;bottom:90px;right:20px;width:380px;height:500px;background:rgba(13,13,21,0.95);border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,0.4);z-index:999998;display:none;border:1px solid rgba(76,195,255,0.4);overflow:hidden;backdrop-filter:blur(20px);';
+  popup.style.cssText = 'position:fixed;bottom:90px;right:20px;width:350px;height:600px;background:rgba(13,13,21,0.95);border-radius:20px;box-shadow:0 10px 50px rgba(0,0,0,0.4);z-index:999998;display:none;border:1px solid rgba(76,195,255,0.4);overflow:hidden;backdrop-filter:blur(20px);';
   
   // Create iframe
   var iframe = document.createElement('iframe');
