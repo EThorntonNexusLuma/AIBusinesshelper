@@ -47,31 +47,34 @@
   
   console.log('[NXL] Chat icon created with ID:', icon.id);
   
-  // Create the iframe container
+  // Create the iframe container with enhanced visibility
   var iframeContainer = document.createElement('div');
   iframeContainer.id = 'nxl-iframe-container';
-  iframeContainer.style.cssText = [
-    'position: fixed !important',
-    'top: 0 !important',
-    'left: 0 !important',
-    'width: 100vw !important',
-    'height: 100vh !important',
-    'z-index: 999998 !important',
-    'display: none !important',
-    'background: rgba(0, 0, 0, 0.8) !important'
-  ].join('; ');
+  
+  // Apply styles directly for better control
+  iframeContainer.style.position = 'fixed';
+  iframeContainer.style.top = '0';
+  iframeContainer.style.left = '0';
+  iframeContainer.style.width = '100vw';
+  iframeContainer.style.height = '100vh';
+  iframeContainer.style.zIndex = '2147483646'; // Just below icon
+  iframeContainer.style.display = 'none';
+  iframeContainer.style.background = 'rgba(0, 0, 0, 0.8)';
+  iframeContainer.style.pointerEvents = 'auto';
+  
+  console.log('[NXL] Iframe container created');
 
   // Create the iframe
   var iframe = document.createElement('iframe');
   iframe.src = HOST;
-  iframe.style.cssText = [
-    'width: 100% !important',
-    'height: 100% !important',
-    'border: none !important',
-    'background: white !important'
-  ].join('; ');
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  iframe.style.border = 'none';
+  iframe.style.background = 'white';
   iframe.setAttribute('allow', 'microphone; camera; autoplay');
   iframe.setAttribute('title', 'Nexus Luma AI Assistant');
+  
+  console.log('[NXL] Iframe created with source:', HOST);
 
   // Create close button
   var closeButton = document.createElement('div');
@@ -103,50 +106,155 @@
   iframeContainer.appendChild(iframe);
   iframeContainer.appendChild(closeButton);
 
-  // Toggle function
+  // Widget control functions with detailed logging
   function openWidget() {
-    console.log('[NXL] Opening widget...');
+    console.log('[NXL] === OPENING WIDGET ===');
+    console.log('[NXL] Current isOpen state:', isOpen);
+    
     isOpen = true;
+    
+    // Force visibility with multiple properties
     iframeContainer.style.display = 'block';
+    iframeContainer.style.visibility = 'visible';
+    iframeContainer.style.opacity = '1';
+    iframeContainer.style.zIndex = '2147483646';
+    
+    // Hide icon
     icon.style.display = 'none';
+    icon.style.visibility = 'hidden';
+    icon.style.opacity = '0';
+    
+    // Prevent body scroll
     document.body.style.overflow = 'hidden';
-    console.log('[NXL] Widget opened successfully');
+    
+    console.log('[NXL] Widget styles applied - forcing visibility');
+    
+    // Verify the changes with comprehensive logging
+    setTimeout(function() {
+      console.log('[NXL] === VERIFICATION ===');
+      console.log('[NXL] Container display:', iframeContainer.style.display);
+      console.log('[NXL] Container visibility:', iframeContainer.style.visibility);
+      console.log('[NXL] Container opacity:', iframeContainer.style.opacity);
+      console.log('[NXL] Container zIndex:', iframeContainer.style.zIndex);
+      console.log('[NXL] Icon display:', icon.style.display);
+      console.log('[NXL] Icon visibility:', icon.style.visibility);
+      console.log('[NXL] Icon opacity:', icon.style.opacity);
+      console.log('[NXL] Body overflow:', document.body.style.overflow);
+      console.log('[NXL] isOpen state:', isOpen);
+      
+      // Check if container is actually in DOM
+      var containerInDOM = document.body.contains(iframeContainer);
+      console.log('[NXL] Container in DOM:', containerInDOM);
+      
+      // Get computed styles
+      var computedStyle = window.getComputedStyle(iframeContainer);
+      console.log('[NXL] Computed display:', computedStyle.display);
+      console.log('[NXL] Computed visibility:', computedStyle.visibility);
+      console.log('[NXL] Computed opacity:', computedStyle.opacity);
+      
+      console.log('[NXL] === WIDGET OPEN COMPLETE ===');
+    }, 50);
   }
 
   function closeWidget() {
-    console.log('[NXL] Closing widget...');
-    isOpen = false;
-    iframeContainer.style.display = 'none';
-    icon.style.display = 'flex';
-    document.body.style.overflow = '';
-    console.log('[NXL] Widget closed successfully');
-  }
-
-  // Reliable event handling
-  function handleIconClick(e) {
-    console.log('[NXL] Icon clicked! Event type:', e.type);
-    e.preventDefault();
-    e.stopPropagation();
+    console.log('[NXL] === CLOSING WIDGET ===');
+    console.log('[NXL] Current isOpen state:', isOpen);
     
-    if (isOpen) {
-      console.log('[NXL] Widget already open, closing...');
-      closeWidget();
-    } else {
-      console.log('[NXL] Opening widget...');
-      openWidget();
-    }
+    isOpen = false;
+    
+    // Force hide container with multiple properties
+    iframeContainer.style.display = 'none';
+    iframeContainer.style.visibility = 'hidden';
+    iframeContainer.style.opacity = '0';
+    
+    // Show icon
+    icon.style.display = 'flex';
+    icon.style.visibility = 'visible';
+    icon.style.opacity = '1';
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+    
+    console.log('[NXL] Widget styles applied - forcing hidden');
+    
+    // Verify the changes with comprehensive logging
+    setTimeout(function() {
+      console.log('[NXL] === CLOSE VERIFICATION ===');
+      console.log('[NXL] Container display:', iframeContainer.style.display);
+      console.log('[NXL] Container visibility:', iframeContainer.style.visibility);
+      console.log('[NXL] Container opacity:', iframeContainer.style.opacity);
+      console.log('[NXL] Icon display:', icon.style.display);
+      console.log('[NXL] Icon visibility:', icon.style.visibility);
+      console.log('[NXL] Icon opacity:', icon.style.opacity);
+      console.log('[NXL] Body overflow:', document.body.style.overflow);
+      console.log('[NXL] isOpen state:', isOpen);
+      
+      // Get computed styles
+      var computedStyle = window.getComputedStyle(iframeContainer);
+      console.log('[NXL] Computed display:', computedStyle.display);
+      console.log('[NXL] Computed visibility:', computedStyle.visibility);
+      console.log('[NXL] Computed opacity:', computedStyle.opacity);
+      
+      console.log('[NXL] === WIDGET CLOSE COMPLETE ===');
+    }, 50);
   }
 
-  // Multiple event types for maximum compatibility
-  icon.onclick = handleIconClick;
-  icon.addEventListener('click', handleIconClick, true);
-  icon.addEventListener('mouseup', handleIconClick);
-  icon.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    handleIconClick(e);
-  });
+  // Debounced click handling to prevent multiple rapid events
+  var clickTimeout = null;
+  var isProcessing = false;
+
+  function handleIconClick(e) {
+    console.log('[NXL] ╔══════════════════════════════════════╗');
+    console.log('[NXL] ║            CLICK HANDLER             ║');
+    console.log('[NXL] ╚══════════════════════════════════════╝');
+    console.log('[NXL] Event type:', e.type);
+    console.log('[NXL] Processing state:', isProcessing);
+    console.log('[NXL] Current isOpen state:', isOpen);
+    console.log('[NXL] Icon visibility:', icon.style.display);
+    console.log('[NXL] Container visibility:', iframeContainer.style.display);
+    
+    // Prevent duplicate events
+    if (isProcessing) {
+      console.log('[NXL] ⚠️  Already processing, ignoring event');
+      return;
+    }
+    
+    // Clear any existing timeout
+    if (clickTimeout) {
+      clearTimeout(clickTimeout);
+      console.log('[NXL] 🔄 Cleared previous timeout');
+    }
+    
+    // Debounce the click
+    clickTimeout = setTimeout(function() {
+      isProcessing = true;
+      console.log('[NXL] 🔒 Processing click - LOCKED');
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      if (isOpen) {
+        console.log('[NXL] 📂 Widget is OPEN, initiating CLOSE...');
+        closeWidget();
+      } else {
+        console.log('[NXL] 📁 Widget is CLOSED, initiating OPEN...');
+        openWidget();
+      }
+      
+      // Reset processing flag after a short delay
+      setTimeout(function() {
+        isProcessing = false;
+        console.log('[NXL] 🔓 Ready for next click - UNLOCKED');
+        console.log('[NXL] ═══════════════════════════════════════');
+      }, 500);
+      
+    }, 100); // 100ms debounce delay
+  }
+
+  // Single, reliable event listener
+  icon.addEventListener('click', handleIconClick);
   
-  console.log('[NXL] Event listeners attached to icon');
+  console.log('[NXL] Click event listener attached to icon');
 
   closeButton.addEventListener('click', function(e) {
     e.preventDefault();
