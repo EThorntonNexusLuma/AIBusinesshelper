@@ -1,6 +1,15 @@
+/**
+ * © 2025 Nexus Luma - All Rights Reserved
+ * LumX AI Assistant - Proprietary Software
+ * License: Nexus Luma Restricted Access License
+ * Unauthorized modification requires password: Sophisticated1192@
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import Vapi from '@vapi-ai/web';
 import { Mic, X, Send } from 'lucide-react';
+// Nexus Luma License Protection - Hidden System
+const NEXUS_COPYRIGHT = '© 2025 Nexus Luma - Licensed Software';
+const LICENSE_HASH = 'NL2025$LumX#Sophisticated1192@';
 
 // Configuration - Replace with your actual Vapi credentials
 const PUBLIC_KEY = "385ecf4c-99a4-4319-8b03-111c6c61abf9";

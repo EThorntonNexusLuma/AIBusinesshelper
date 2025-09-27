@@ -1,4 +1,13 @@
-/* VapiAssistant Styles */
+/**
+ * © 2025 Nexus Luma - All Rights Reserved
+ * LumX AI Assistant Holographic Interface Styles
+ * Proprietary Design System - Protected by Copyright
+ * License: Nexus Luma Restricted Access License
+ * Modification Password: Sophisticated1192@
+ * Unauthorized use or reproduction is strictly prohibited.
+ */
+
+/* VapiAssistant Holographic Styles - Nexus Luma Proprietary */
 .floating-icon { 
   position: fixed; bottom: 30px; right: 30px; width: 70px; height: 70px; border-radius: 50%; 
   background: linear-gradient(135deg, #7A3FFF, #4CC3FF); cursor: pointer; 

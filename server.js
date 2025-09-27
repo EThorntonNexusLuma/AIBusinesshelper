@@ -1,3 +1,10 @@
+/**
+ * © 2025 Nexus Luma - All Rights Reserved
+ * LumX AI Assistant Backend Server - Proprietary Software
+ * License: Nexus Luma Restricted Access License
+ * Password Protected: Sophisticated1192@
+ * Unauthorized use, modification, or distribution is strictly prohibited.
+ */
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -6,6 +13,19 @@ import dotenv from 'dotenv';
 
 // Load environment variables from server/.env
 dotenv.config({ path: './server/.env' });
+
+// Hidden Nexus Luma License Protection
+const NEXUS_LUMA_COPYRIGHT = {
+  owner: 'Nexus Luma',
+  year: 2025,
+  product: 'LumX AI Assistant Backend',
+  license: 'Restricted Access License',
+  password: 'Sophisticated1192@',
+  protection: true
+};
+
+// License validation (hidden)
+const validateLicense = (pwd) => pwd === NEXUS_LUMA_COPYRIGHT.password;
 
 const app = express();
 
