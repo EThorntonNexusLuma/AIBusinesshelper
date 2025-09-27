@@ -735,17 +735,19 @@ export const VapiAssistant: React.FC = () => {
         </button>
 
         <div className="interface-container">
-          {/* Voice Interface */}
-          <div className="voice-interface">
-            <div className="voice-ring ring-outer"></div>
-            <div className="voice-ring ring-middle"></div>
-            <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
-              <Mic 
-                className={`mic-icon ${isListening ? 'listening' : ''}`}
-                size={30}
-              />
+          {/* Voice Interface - Only show in voice mode */}
+          {currentMode === 'voice' && (
+            <div className="voice-interface">
+              <div className="voice-ring ring-outer"></div>
+              <div className="voice-ring ring-middle"></div>
+              <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
+                <Mic 
+                  className={`mic-icon ${isListening ? 'listening' : ''}`}
+                  size={30}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Interface Text */}
           <div className="interface-text">
@@ -769,12 +771,14 @@ export const VapiAssistant: React.FC = () => {
             </button>
           </div>
 
-          {/* Voice Visualizer */}
-          <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="voice-bar"></div>
-            ))}
-          </div>
+          {/* Voice Visualizer - Only show in voice mode */}
+          {currentMode === 'voice' && (
+            <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="voice-bar"></div>
+              ))}
+            </div>
+          )}
 
           {/* Chat Container */}
           <div className={`chat-container ${currentMode === 'text' ? 'active' : ''}`}>

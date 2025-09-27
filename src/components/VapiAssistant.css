@@ -40,6 +40,11 @@
   animation: holographicFloat 4s ease-in-out infinite; 
 }
 
+/* Compact interface for text-only mode */
+.interface-container:has(.chat-container.active) {
+  padding: 40px 30px; /* Reduced padding when in text mode */
+}
+
 @keyframes holographicFloat { 
   0%, 100% { transform: translateY(0px) rotateX(0deg);} 
   50% { transform: translateY(-10px) rotateX(2deg);} 
@@ -154,6 +159,12 @@
   animation: holographicFadeIn 0.8s ease-out;
 }
 .chat-container.active { display: block; }
+
+/* Enhanced chat space when voice interface is hidden */
+.interface-container:has(.chat-container.active) .chat-messages,
+.chat-container.active .chat-messages {
+  height: 440px; /* Increased from 380px for more chat space */
+}
 
 @keyframes holographicFadeIn {
   from { opacity: 0; transform: translateY(20px) scale(0.95); }
