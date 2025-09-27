@@ -162,6 +162,14 @@
     
     isOpen = false;
     
+    // Send close message to iframe to end any active calls
+    try {
+      iframe.contentWindow.postMessage('nxl:close', '*');
+      console.log('[NXL] Close message sent to iframe to end calls');
+    } catch (e) {
+      console.log('[NXL] Could not send close message:', e);
+    }
+    
     // Force hide container with multiple properties
     iframeContainer.style.display = 'none';
     iframeContainer.style.visibility = 'hidden';
