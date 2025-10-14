@@ -47,19 +47,21 @@
   
   console.log('[NXL] Chat icon created with ID:', icon.id);
   
-  // Create the iframe container with enhanced visibility
+  // Create the iframe container for corner widget
   var iframeContainer = document.createElement('div');
   iframeContainer.id = 'nxl-iframe-container';
   
-  // Apply styles directly for better control
+  // Corner styles
   iframeContainer.style.position = 'fixed';
-  iframeContainer.style.top = '0';
-  iframeContainer.style.left = '0';
-  iframeContainer.style.width = '100vw';
-  iframeContainer.style.height = '100vh';
+  iframeContainer.style.bottom = '30px';
+  iframeContainer.style.right = '30px';
+  iframeContainer.style.width = '370px';
+  iframeContainer.style.height = '480px';
   iframeContainer.style.zIndex = '2147483646'; // Just below icon
   iframeContainer.style.display = 'none';
-  iframeContainer.style.background = 'rgba(0, 0, 0, 0.8)';
+  iframeContainer.style.background = '#fff';
+  iframeContainer.style.borderRadius = '16px';
+  iframeContainer.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
   iframeContainer.style.pointerEvents = 'auto';
   
   console.log('[NXL] Iframe container created');
