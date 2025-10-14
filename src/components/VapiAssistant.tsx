@@ -1,27 +1,10 @@
-/**
- * © 2025 Nexus Luma - All Rights Reserved
- * LumX AI Assistant - Proprietary Software
- * License: Nexus Luma Restricted Access License
- * Unauthorized modification requires password: Sophisticated1192@
- */
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import Vapi from '@vapi-ai/web';
 import { Mic, X, Send } from 'lucide-react';
 
-// Ensure component styles are bundled (keep your existing CSS file name/path)
-import './VapiAssistant.css';
-
 // Configuration - Replace with your actual Vapi credentials
-const PUBLIC_KEY = '385ecf4c-99a4-4319-8b03-111c6c61abf9';
-const ASSISTANT_ID = '900acf00-1429-4a76-92b2-93f0e4ffa109';
-
-// API URL configuration
-const getApiUrl = () => {
-  if (import.meta.env.DEV) return '';
-  const apiUrl = import.meta.env.VITE_API_URL || '';
-  return apiUrl;
-};
+const PUBLIC_KEY = "385ecf4c-99a4-4319-8b03-111c6c61abf9";
+const ASSISTANT_ID = "900acf00-1429-4a76-92b2-93f0e4ffa109";
 
 interface Message {
   type: 'user' | 'ai' | 'transcript';
@@ -38,45 +21,25 @@ export const VapiAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
-      content:
-        "Hello! I'm LumX, your AI assistant from Nexus Luma. I'm here to understand your needs and connect you with the right specialist. What can I help you with today?",
-    },
+      content: "Hello! I'm your AI assistant. I can help you with information about luxury properties, answer questions, or just have a conversation. How can I assist you today?"
+    }
   ]);
   const [textInput, setTextInput] = useState('');
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
-  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
 
   const vapiRef = useRef<Vapi | null>(null);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
 
-  // ---------- Utilities ----------
-  const updateStatus = (text: string, className: string) => setStatus({ text, className });
-
-  const addMessage = (type: 'user' | 'ai' | 'transcript', content: string) => {
-    const newMessage: Message = { type, content };
-    setMessages((prev) => [...prev, newMessage]);
+  // Utility Functions
+  const updateStatus = (text: string, className: string) => {
+    setStatus({ text, className });
+    console.log(`[Status] ${text}`);
   };
 
-  // ---------- Backend health ----------
-  const checkBackendStatus = async () => {
-    try {
-      const apiUrl = getApiUrl();
-
-      if (!apiUrl || apiUrl === '' || apiUrl.includes('your-backend-url')) {
-        setBackendStatus('disconnected');
-        return;
-      }
-
-      const response = await fetch(`${apiUrl}/health`, {
-        method: 'GET',
-        mode: 'cors',
-        headers: { Accept: 'application/json' },
-      });
-
-      setBackendStatus(response.ok ? 'connected' : 'disconnected');
-    } catch {
-      setBackendStatus('disconnected');
-    }
+  const addMessage = (type: 'user' | 'ai', content: string, isTranscript = false) => {
+    const newMessage: Message = { type, content, isTranscript };
+    setMessages(prev => [...prev, newMessage]);
+    console.log(`[Message] ${type}: ${content}`);
   };
 
   // Scroll to bottom when messages change
@@ -86,12 +49,13 @@ export const VapiAssistant: React.FC = () => {
     }
   }, [messages]);
 
-  // ---------- Mic permission ----------
+  // Microphone Permission
   const requestMicPermission = async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((t) => t.stop());
+      stream.getTracks().forEach(track => track.stop());
       setMicPermission('granted');
+      console.log('[Mic] Permission granted');
       return true;
     } catch (error) {
       setMicPermission('denied');
@@ -101,7 +65,7 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  // ---------- Vapi init ----------
+  // Initialize Vapi
   const initializeVapi = async () => {
     if (vapiRef.current) return;
 
@@ -114,33 +78,43 @@ export const VapiAssistant: React.FC = () => {
     try {
       const vapi = new Vapi(PUBLIC_KEY);
       vapiRef.current = vapi;
+      console.log('[Vapi] Client initialized');
 
+      // Event Handlers
       vapi.on('call-start', () => {
+        console.log('[Vapi] Call started');
         setIsConnected(true);
         updateStatus('🔴 Connected - Speak now!', 'listening');
       });
 
       vapi.on('call-end', () => {
+        console.log('[Vapi] Call ended');
         setIsConnected(false);
         setIsListening(false);
         updateStatus('✅ Ready to assist', 'inactive');
       });
 
       vapi.on('speech-start', () => {
+        console.log('[Vapi] Speech started');
         setIsListening(true);
         updateStatus('🎤 Listening...', 'listening');
       });
 
       vapi.on('speech-end', () => {
+        console.log('[Vapi] Speech ended');
         setIsListening(false);
         updateStatus('🤔 Processing...', 'thinking');
       });
 
       vapi.on('message', (message: any) => {
+        console.log('[Vapi] Message received:', message);
+
+        // Handle transcripts
         if (message.type === 'transcript' && message.transcriptType === 'final') {
           addMessage('user', message.transcript);
         }
 
+        // Handle assistant responses
         if (message.type === 'function-call') {
           const response = message.functionCall?.parameters?.response;
           if (response) {
@@ -149,6 +123,7 @@ export const VapiAssistant: React.FC = () => {
           }
         }
 
+        // Handle other message types
         if (message.type === 'conversation-update' && message.conversation) {
           const lastMessage = message.conversation[message.conversation.length - 1];
           if (lastMessage && lastMessage.role === 'assistant' && lastMessage.message) {
@@ -165,14 +140,18 @@ export const VapiAssistant: React.FC = () => {
         updateStatus('❌ Connection error', 'error');
         addMessage('ai', 'Sorry, I encountered an error. Please try again or switch to text mode.');
       });
+
+      console.log('[Vapi] Event listeners attached');
     } catch (error) {
       console.error('[Vapi] Initialization failed:', error);
       updateStatus('❌ Failed to initialize voice', 'error');
     }
   };
 
-  // ---------- Voice control ----------
+  // Voice Control
   const startVoice = async () => {
+    console.log('[Voice] Starting voice mode');
+
     if (micPermission === 'prompt') {
       const granted = await requestMicPermission();
       if (!granted) {
@@ -198,6 +177,7 @@ export const VapiAssistant: React.FC = () => {
     try {
       updateStatus('🎤 Connecting...', 'thinking');
       await vapiRef.current.start(ASSISTANT_ID);
+      console.log('[Voice] Started successfully');
     } catch (error) {
       console.error('[Voice] Start failed:', error);
       updateStatus('❌ Failed to connect', 'error');
@@ -206,6 +186,7 @@ export const VapiAssistant: React.FC = () => {
   };
 
   const stopVoice = () => {
+    console.log('[Voice] Stopping voice mode');
     try {
       if (vapiRef.current && isConnected) {
         vapiRef.current.stop();
@@ -217,9 +198,10 @@ export const VapiAssistant: React.FC = () => {
     setIsListening(false);
   };
 
-  // ---------- Mode ----------
+  // Mode Management
   const handleModeChange = (mode: 'voice' | 'text') => {
     setCurrentMode(mode);
+    
     if (mode === 'voice') {
       startVoice();
     } else {
@@ -228,185 +210,25 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  // ---------- Streaming text chat ----------
-  const streamMessage = async (userMessage: string, chatHistory: Message[]) => {
-    updateStatus('🤔 AI thinking...', 'thinking');
-
-    if (backendStatus === 'disconnected') {
-      const errorMsg = import.meta.env.DEV
-        ? '⚠️ Backend server is not running on port 3001. Please start the server.'
-        : '⚠️ Backend server is not deployed. Text chat requires a deployed backend. Voice chat should still work!';
-      addMessage('ai', errorMsg);
-      updateStatus('💬 Text mode active', 'inactive');
-      return;
-    }
-
-    const openAIMessages = chatHistory.map((msg) => ({
-      role: msg.type === 'user' ? ('user' as const) : ('assistant' as const),
-      content: msg.content,
-    }));
-    openAIMessages.push({ role: 'user', content: userMessage });
-
-    const apiUrl = getApiUrl();
-    const streamUrl = `${apiUrl}/api/text/stream`;
-
-    try {
-      const response = await fetch(streamUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: openAIMessages }),
-      });
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      if (!response.body) throw new Error('No response body');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      let assistantText = '';
-      const messageIndex = messages.length;
-
-      setMessages((prev) => [...prev, { type: 'ai', content: '...', isTranscript: false }]);
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-
-        for (const line of chunk.split('\n')) {
-          if (!line.startsWith('data:')) continue;
-
-          try {
-            const data = JSON.parse(line.slice(5));
-
-            if (data.delta) {
-              assistantText += data.delta;
-              setMessages((prev) => {
-                const newMessages = [...prev];
-                if (newMessages[messageIndex]) {
-                  newMessages[messageIndex] = {
-                    type: 'ai',
-                    content: assistantText || '...',
-                    isTranscript: false,
-                  };
-                }
-                return newMessages;
-              });
-            }
-
-            if (data.done) {
-              updateStatus('💬 Text mode active', 'inactive');
-            }
-
-            if (data.error) {
-              console.error('Stream error:', data.error);
-              setMessages((prev) => {
-                const newMessages = [...prev];
-                if (newMessages[messageIndex]) {
-                  newMessages[messageIndex] = {
-                    type: 'ai',
-                    content: 'Sorry, I encountered an error. Please try again.',
-                    isTranscript: false,
-                  };
-                }
-                return newMessages;
-              });
-              break;
-            }
-          } catch (parseError) {
-            console.error('Parse error:', parseError);
-          }
-        }
-      }
-
-      if (!assistantText.trim()) {
-        setMessages((prev) => {
-          const newMessages = [...prev];
-          if (newMessages[messageIndex]) {
-            newMessages[messageIndex] = {
-              type: 'ai',
-              content: "I apologize, but I didn't receive a proper response. Could you try again?",
-              isTranscript: false,
-            };
-          }
-          return newMessages;
-        });
-      }
-
-      if (
-        assistantText.toLowerCase().includes('consent') ||
-        assistantText.toLowerCase().includes('contact you')
-      ) {
-        await extractLeadFromConversation([
-          ...messages,
-          { type: 'user', content: userMessage, isTranscript: false },
-          { type: 'ai', content: assistantText, isTranscript: false },
-        ]);
-      }
-    } catch (error) {
-      console.error('Streaming error:', error);
-      updateStatus('💬 Using fallback chat...', 'thinking');
-
-      try {
-        const chatUrl = `${apiUrl}/api/chat`;
-        const fallbackResponse = await fetch(chatUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: openAIMessages }),
-        });
-
-        if (fallbackResponse.ok) {
-          const data = await fallbackResponse.json();
-          addMessage('ai', data.reply || 'Sorry, I encountered an error. Please try again.');
-        } else {
-          addMessage('ai', "I'm having trouble connecting. Please check your connection and try again.");
-        }
-      } catch (fallbackError) {
-        console.error('Fallback error:', fallbackError);
-        addMessage('ai', "I'm having trouble connecting. Please check your connection and try again.");
-      }
-
-      updateStatus('💬 Text mode active', 'inactive');
-    }
-  };
-
-  // ---------- Lead extraction ----------
-  const extractLeadFromConversation = async (conversationMessages: Message[]) => {
-    try {
-      const response = await fetch(`${getApiUrl()}/api/text/extract-lead`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: conversationMessages }),
-      });
-
-      const data = await response.json();
-
-      if (data.lead && data.lead.consent) {
-        await fetch(`${getApiUrl()}/api/leads`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lead: data.lead }),
-        });
-      }
-    } catch (error) {
-      console.error('Lead extraction error:', error);
-    }
-  };
-
-  // ---------- Text send ----------
-  const sendTextMessage = async () => {
+  // Text Chat
+  const sendTextMessage = () => {
     const message = textInput.trim();
     if (!message) return;
 
     addMessage('user', message);
     setTextInput('');
 
+    updateStatus('🤔 AI thinking...', 'thinking');
+
+    // If voice is connected, try to send through Vapi
     if (isConnected && vapiRef.current) {
       try {
         vapiRef.current.send({
           type: 'add-message',
-          message: { role: 'user', content: message },
+          message: {
+            role: 'user',
+            content: message
+          }
         });
         return;
       } catch (error) {
@@ -414,7 +236,20 @@ export const VapiAssistant: React.FC = () => {
       }
     }
 
-    await streamMessage(message, messages);
+    // Fallback: Simulate response for text-only mode
+    setTimeout(() => {
+      const responses = [
+        "I'd be happy to help you with that. Could you provide more specific details about what you're looking for?",
+        "That's an interesting question! Based on what you've asked, I can provide some information about luxury properties and their amenities.",
+        "Thank you for your question. I can assist you with property information, scheduling viewings, or answering questions about our luxury real estate offerings.",
+        "I understand you're interested in learning more. What specific aspects would you like me to focus on?",
+        "Great question! I can provide detailed information about pricing, locations, amenities, and help you schedule property viewings."
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      addMessage('ai', randomResponse);
+      updateStatus('💬 Text mode active', 'inactive');
+    }, 1000 + Math.random() * 1000);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -424,21 +259,19 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    checkBackendStatus();
-  }, []);
-
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (vapiRef.current && isConnected) vapiRef.current.stop();
+      if (vapiRef.current && isConnected) {
+        vapiRef.current.stop();
+      }
     };
   }, [isConnected]);
 
-  // ---------- Render ----------
   return (
     <>
       {/* Floating Icon */}
-      <div
+      <div 
         className="floating-icon"
         onClick={() => setIsOpen(true)}
         role="button"
@@ -447,147 +280,101 @@ export const VapiAssistant: React.FC = () => {
         <Mic size={30} color="white" />
       </div>
 
-      {/* ===== FULLSCREEN OVERLAY via PORTAL (with inline fallback styles) ===== */}
-      {createPortal(
-        <div
-          className={`holographic-interface ${isOpen ? 'active' : ''}`}
-          style={{
-            // Fallback styles in case CSS fails to load on host/embedded page
-            position: 'fixed',
-            inset: 0,
-            width: '100vw',
-            height: '100vh',
-            display: isOpen ? 'flex' : 'none',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2000,
-            // keep backdrop subtle—you can adjust or remove if your CSS handles bg
-            background:
-              'linear-gradient(135deg, rgba(4,7,20,0.85), rgba(12,16,35,0.85))',
-            backdropFilter: 'blur(18px)',
-          }}
-        >
-          <button
+      {/* Holographic Interface - only render when open */}
+      {isOpen && (
+        <div className={`holographic-interface active`}> 
+          <button 
             className="close-btn"
             onClick={() => {
               setIsOpen(false);
               stopVoice();
             }}
             aria-label="Close assistant"
-            style={{
-              // Fallback close button styles
-              position: 'absolute',
-              top: 16,
-              right: 16,
-              width: 36,
-              height: 36,
-              borderRadius: 9999,
-              border: '1px solid rgba(255,255,255,0.35)',
-              background: 'rgba(255,255,255,0.08)',
-              cursor: 'pointer',
-            }}
           >
             <X size={16} />
           </button>
 
-          <div className="interface-container" style={{ maxWidth: 560, width: '92%' }}>
-            {/* VOICE SECTION */}
-            {currentMode === 'voice' && (
-              <>
-                <div className="voice-interface">
-                  <div className="voice-ring ring-outer"></div>
-                  <div className="voice-ring ring-middle"></div>
-                  <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
-                    <Mic className={`mic-icon ${isListening ? 'listening' : ''}`} size={30} />
+          <div className="interface-container">
+            {/* Voice Interface */}
+            <div className="voice-interface">
+              <div className="voice-ring ring-outer"></div>
+              <div className="voice-ring ring-middle"></div>
+              <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
+                <Mic 
+                  className={`mic-icon ${isListening ? 'listening' : ''}`}
+                  size={30}
+                />
+              </div>
+            </div>
+
+            {/* Interface Text */}
+            <div className="interface-text">
+              <h1 className="interface-title">Advanced Voice AI Assistant</h1>
+              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
+            </div>
+
+            {/* Controls */}
+            <div className="controls">
+              <button 
+                className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
+                onClick={() => handleModeChange('voice')}
+              >
+                Voice Chat
+              </button>
+              <button 
+                className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
+                onClick={() => handleModeChange('text')}
+              >
+                Text Chat
+              </button>
+            </div>
+
+            {/* Voice Visualizer */}
+            <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="voice-bar"></div>
+              ))}
+            </div>
+
+            {/* Chat Container */}
+            <div className={`chat-container ${currentMode === 'text' ? 'active' : ''}`}> 
+              <div className="chat-messages" ref={chatMessagesRef}>
+                {messages.map((message, index) => (
+                  <div 
+                    key={index}
+                    className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                  >
+                    {message.content}
                   </div>
-                </div>
+                ))}
+              </div>
+              <div className="chat-input-container">
+                <input
+                  type="text"
+                  className="chat-input"
+                  placeholder="Type your message..."
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+                <button
+                  className="send-btn"
+                  onClick={sendTextMessage}
+                  disabled={!textInput.trim()}
+                  aria-label="Send message"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
 
-                <div className="interface-text">
-                  <h1 className="interface-title">Voice Assistant</h1>
-                  <p className="interface-subtitle">Tap the mic and start speaking.</p>
-                </div>
-
-                <div className="controls">
-                  <button className={`control-btn voice-btn active`} onClick={startVoice}>
-                    Start Voice
-                  </button>
-                  <button className={`control-btn text-btn`} onClick={() => handleModeChange('text')}>
-                    Switch to Text
-                  </button>
-                </div>
-
-                <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="voice-bar"></div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {/* TEXT SECTION */}
-            {currentMode === 'text' && (
-              <>
-                <div className="interface-text">
-                  <h1 className="interface-title">Text Chat</h1>
-                </div>
-
-                <div className="chat-container active">
-                  <div className="chat-messages" ref={chatMessagesRef}>
-                    {messages.map((message, index) => (
-                      <div
-                        key={index}
-                        className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
-                      >
-                        {message.content}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="chat-input-container chat-input-row">
-                    <input
-                      type="text"
-                      className="chat-input chat-input-min"
-                      placeholder="Type your message..."
-                      value={textInput}
-                      onChange={(e) => setTextInput(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                    />
-                    <button
-                      className="send-btn send-btn-nomargin"
-                      onClick={sendTextMessage}
-                      disabled={!textInput.trim()}
-                      aria-label="Send message"
-                    >
-                      <Send size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="controls controls-side-by-side controls-text-spacing">
-                  <button className={`control-btn voice-btn`} onClick={() => handleModeChange('voice')}>
-                    Switch to Voice
-                  </button>
-                  <button className={`control-btn text-btn active`} disabled>
-                    Text Chat
-                  </button>
-                </div>
-              </>
-            )}
-
-            {/* STATUS */}
-            <div className={`status ${status.className}`}>
+            {/* Status */}
+            <div className={`status ${status.className}`}> 
               {status.text}
-              <span className={`backend-status ${backendStatus}`}>
-                {backendStatus === 'checking' && ' • Checking backend...'}
-                {backendStatus === 'connected' && ' • Backend connected ✅'}
-                {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
-              </span>
             </div>
           </div>
-        </div>,
-        document.body
+        </div>
       )}
-      {/* ===== END OVERLAY ===== */}
     </>
   );
 };
