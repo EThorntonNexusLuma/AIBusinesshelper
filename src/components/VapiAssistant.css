@@ -27,13 +27,50 @@
   box-shadow: 0 8px 32px rgba(30, 63, 255, 0.4); 
   backdrop-filter: blur(10px); 
   border: 1px solid rgba(76, 195, 255, 0.3); 
-  z-index: 1000; 
+  z-index: 10001; 
   animation: gentlePulse 3s ease-in-out infinite; 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
 }
+
 .floating-icon:hover { 
   transform: scale(1.1); 
   box-shadow: 0 12px 40px rgba(76, 195, 255, 0.6); 
+}
+
+/* Floating icon when widget is open - transforms to X */
+.floating-icon.active {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.95) 0%,
+    rgba(220, 38, 38, 1) 100%
+  );
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 
+    0 8px 32px rgba(239, 68, 68, 0.5),
+    0 0 40px rgba(239, 68, 68, 0.3);
+  animation: none;
+}
+
+.floating-icon.active:hover {
+  background: linear-gradient(135deg, 
+    rgba(220, 38, 38, 1) 0%,
+    rgba(185, 28, 28, 1) 100%
+  );
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 
+    0 12px 40px rgba(239, 68, 68, 0.7),
+    0 0 50px rgba(239, 68, 68, 0.5);
+}
+
+.floating-icon svg {
+  transition: transform 0.3s ease;
+}
+
+.floating-icon.active svg {
+  transform: rotate(0deg);
+}
+
+.floating-icon.active:hover svg {
+  transform: rotate(90deg);
 }
 
 @keyframes gentlePulse { 
