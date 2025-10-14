@@ -303,21 +303,39 @@ export const VapiAssistant: React.FC = () => {
           </button>
 
           <div className="interface-container">
-            {/* Header Text - Only show in voice mode */}
-            {currentMode === 'voice' && (
-              <div className="interface-text">
-                <h2 className="interface-title">
-                  Advanced Voice AI Assistant
-                </h2>
-                <p className="interface-subtitle">
-                  Speak naturally or type your questions. I'm here to help!
-                </p>
-              </div>
-            )}
+            {/* Mode Toggle Controls - At the top */}
+            <div className="mode-toggle-container">
+              <button
+                className={`mode-toggle-btn ${currentMode === 'voice' ? 'active' : ''}`}
+                onClick={() => handleModeChange('voice')}
+                disabled={isConnected}
+                title="Voice Chat"
+              >
+                <Mic size={20} />
+                <span>Voice</span>
+              </button>
+              <button
+                className={`mode-toggle-btn ${currentMode === 'text' ? 'active' : ''}`}
+                onClick={() => handleModeChange('text')}
+                title="Text Chat"
+              >
+                <Send size={20} />
+                <span>Text</span>
+              </button>
+            </div>
 
-            {/* Voice Interface - Only show in voice mode */}
+            {/* Voice Mode Content */}
             {currentMode === 'voice' && (
-              <>
+              <div className="voice-mode-content">
+                <div className="interface-text">
+                  <h2 className="interface-title">
+                    Voice AI Assistant
+                  </h2>
+                  <p className="interface-subtitle">
+                    Speak naturally - I'm listening!
+                  </p>
+                </div>
+
                 <div className="voice-interface">
                   <div className="voice-ring ring-outer"></div>
                   <div className="voice-ring ring-middle"></div>
@@ -329,62 +347,47 @@ export const VapiAssistant: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Voice Visualizer */}
                 <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="voice-bar"></div>
                   ))}
                 </div>
-              </>
+              </div>
             )}
 
-            {/* Mode Toggle Controls */}
-            <div className="controls controls-side-by-side">
-              <button
-                className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
-                onClick={() => handleModeChange('voice')}
-                disabled={isConnected}
-              >
-                Voice Chat
-              </button>
-              <button
-                className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
-                onClick={() => handleModeChange('text')}
-              >
-                Text Chat
-              </button>
-            </div>
-
-            {/* Chat Container - Only show in text mode */}
+            {/* Text Mode Content */}
             {currentMode === 'text' && (
-              <div className="chat-container active">
-                <div className="chat-messages" ref={chatMessagesRef}>
-                  {messages.map((message, index) => (
-                    <div 
-                      key={index}
-                      className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+              <div className="text-mode-content">
+                <div className="chat-container-wrapper">
+                  <div className="chat-messages" ref={chatMessagesRef}>
+                    {messages.map((message, index) => (
+                      <div 
+                        key={index}
+                        className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                      >
+                        {message.content}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="chat-input-container">
+                    <input
+                      type="text"
+                      className="chat-input"
+                      placeholder="Type your message..."
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      autoFocus
+                    />
+                    <button
+                      className="send-btn"
+                      onClick={sendTextMessage}
+                      disabled={!textInput.trim()}
+                      aria-label="Send message"
                     >
-                      {message.content}
-                    </div>
-                  ))}
-                </div>
-                <div className="chat-input-container">
-                  <input
-                    type="text"
-                    className="chat-input"
-                    placeholder="Type your message..."
-                    value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                  />
-                  <button
-                    className="send-btn"
-                    onClick={sendTextMessage}
-                    disabled={!textInput.trim()}
-                    aria-label="Send message"
-                  >
-                    <Send size={16} />
-                  </button>
+                      <Send size={18} />
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
@@ -397,5 +400,7 @@ export const VapiAssistant: React.FC = () => {
         </div>
       )}
     </>
+  );
+};
   );
 };
