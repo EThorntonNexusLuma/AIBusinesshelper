@@ -62,13 +62,15 @@
   opacity: 0; 
   visibility: hidden; 
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-  transform: scale(0.8) perspective(1000px) rotateX(10deg); 
+  transform: scale(0.8) perspective(1000px) rotateX(10deg);
+  pointer-events: none; /* Disabled when hidden */
 }
 
 .holographic-interface.active { 
   opacity: 1; 
   visibility: visible; 
-  transform: scale(1) perspective(1000px) rotateX(0deg); 
+  transform: scale(1) perspective(1000px) rotateX(0deg);
+  pointer-events: auto; /* Enabled when active */
 }
 
 .interface-container { 
@@ -83,6 +85,12 @@
   justify-content: center;
   align-items: center;
   animation: holographicFloat 4s ease-in-out infinite;
+  pointer-events: none; /* CRITICAL: Allow clicks to pass through container */
+}
+
+/* Re-enable pointer events for interactive children */
+.interface-container > * {
+  pointer-events: auto;
 }
 
 @keyframes holographicFloat { 
@@ -99,27 +107,67 @@
   height: 40px; 
   border: none; 
   border-radius: 50%; 
-  background: rgba(13, 13, 21, 0.8); 
+  background: rgba(13, 13, 21, 0.9); 
   backdrop-filter: blur(10px); 
   border: 1px solid rgba(76, 195, 255, 0.4); 
   color: #ffffff; 
-  cursor: pointer; 
+  cursor: pointer !important; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
   transition: all 0.3s ease; 
-  z-index: 3000; /* CRITICAL: High z-index to ensure clickability */
-  pointer-events: auto; /* CRITICAL: Ensure pointer events work */
+  z-index: 9999 !important; /* CRITICAL: Highest z-index */
+  pointer-events: auto !important; /* CRITICAL: Force pointer events */
+  isolation: isolate; /* Create new stacking context */
 }
 
 .close-btn:hover { 
-  background: rgba(30, 63, 255, 0.6); 
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(76, 195, 255, 0.5);
+  background: rgba(239, 68, 68, 0.8); 
+  border-color: rgba(239, 68, 68, 0.8);
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.6);
 }
 
 .close-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.95) rotate(90deg);
+  background: rgba(239, 68, 68, 1);
+}
+
+/* NEW: Big obvious close button at bottom */
+.close-widget-btn {
+  margin-top: 30px;
+  padding: 14px 32px;
+  border: none;
+  border-radius: 25px;
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.9) 0%,
+    rgba(220, 38, 38, 0.9) 100%
+  );
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+  pointer-events: auto;
+  z-index: 100;
+}
+
+.close-widget-btn:hover {
+  background: linear-gradient(135deg, 
+    rgba(220, 38, 38, 1) 0%,
+    rgba(185, 28, 28, 1) 100%
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(239, 68, 68, 0.6);
+}
+
+.close-widget-btn:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .interface-text { 
