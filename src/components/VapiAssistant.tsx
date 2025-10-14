@@ -5,24 +5,21 @@
  * Unauthorized modification requires password: Sophisticated1192@
  */
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import Vapi from '@vapi-ai/web';
 import { Mic, X, Send } from 'lucide-react';
-// Nexus Luma License Protection - Hidden System
+
+// Ensure component styles are bundled (keep your existing CSS file name/path)
+import './VapiAssistant.css';
 
 // Configuration - Replace with your actual Vapi credentials
-const PUBLIC_KEY = "385ecf4c-99a4-4319-8b03-111c6c61abf9";
-const ASSISTANT_ID = "900acf00-1429-4a76-92b2-93f0e4ffa109";
+const PUBLIC_KEY = '385ecf4c-99a4-4319-8b03-111c6c61abf9';
+const ASSISTANT_ID = '900acf00-1429-4a76-92b2-93f0e4ffa109';
 
 // API URL configuration
 const getApiUrl = () => {
-  // In development, use proxy (empty string means relative URLs)
-  if (import.meta.env.DEV) {
-    return '';
-  }
-  
-  // In production, use environment variable or show that backend is needed
+  if (import.meta.env.DEV) return '';
   const apiUrl = import.meta.env.VITE_API_URL || '';
-  
   return apiUrl;
 };
 
@@ -31,9 +28,6 @@ interface Message {
   content: string;
   isTranscript?: boolean;
 }
-
-
-
 
 export const VapiAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -44,8 +38,9 @@ export const VapiAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'ai',
-      content: "Hello! I'm LumX, your AI assistant from Nexus Luma. I'm here to understand your needs and connect you with the right specialist. What can I help you with today?"
-    }
+      content:
+        "Hello! I'm LumX, your AI assistant from Nexus Luma. I'm here to understand your needs and connect you with the right specialist. What can I help you with today?",
+    },
   ]);
   const [textInput, setTextInput] = useState('');
   const [micPermission, setMicPermission] = useState<'granted' | 'denied' | 'prompt'>('prompt');
@@ -54,49 +49,35 @@ export const VapiAssistant: React.FC = () => {
   const vapiRef = useRef<Vapi | null>(null);
   const chatMessagesRef = useRef<HTMLDivElement>(null);
 
-  // Utility Functions
-  const updateStatus = (text: string, className: string) => {
-    setStatus({ text, className });
-  };
+  // ---------- Utilities ----------
+  const updateStatus = (text: string, className: string) => setStatus({ text, className });
 
   const addMessage = (type: 'user' | 'ai' | 'transcript', content: string) => {
     const newMessage: Message = { type, content };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
 
-  // Check backend status
+  // ---------- Backend health ----------
   const checkBackendStatus = async () => {
     try {
       const apiUrl = getApiUrl();
-      
-      // In production, check if we have a backend URL
+
       if (!apiUrl || apiUrl === '' || apiUrl.includes('your-backend-url')) {
         setBackendStatus('disconnected');
         return;
       }
-      
-      // Try to connect to the backend
-      const response = await fetch(`${apiUrl}/health`, { 
+
+      const response = await fetch(`${apiUrl}/health`, {
         method: 'GET',
         mode: 'cors',
-        headers: {
-          'Accept': 'application/json',
-        }
+        headers: { Accept: 'application/json' },
       });
-      
-      if (response.ok) {
-        setBackendStatus('connected');
-      } else {
-        setBackendStatus('disconnected');
-      }
-    } catch (error) {
+
+      setBackendStatus(response.ok ? 'connected' : 'disconnected');
+    } catch {
       setBackendStatus('disconnected');
     }
   };
-
-
-
-
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -105,11 +86,11 @@ export const VapiAssistant: React.FC = () => {
     }
   }, [messages]);
 
-  // Microphone Permission
+  // ---------- Mic permission ----------
   const requestMicPermission = async (): Promise<boolean> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((t) => t.stop());
       setMicPermission('granted');
       return true;
     } catch (error) {
@@ -120,7 +101,7 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  // Initialize Vapi
+  // ---------- Vapi init ----------
   const initializeVapi = async () => {
     if (vapiRef.current) return;
 
@@ -134,7 +115,6 @@ export const VapiAssistant: React.FC = () => {
       const vapi = new Vapi(PUBLIC_KEY);
       vapiRef.current = vapi;
 
-      // Event Handlers
       vapi.on('call-start', () => {
         setIsConnected(true);
         updateStatus('🔴 Connected - Speak now!', 'listening');
@@ -157,13 +137,10 @@ export const VapiAssistant: React.FC = () => {
       });
 
       vapi.on('message', (message: any) => {
-
-        // Handle transcripts
         if (message.type === 'transcript' && message.transcriptType === 'final') {
           addMessage('user', message.transcript);
         }
 
-        // Handle assistant responses
         if (message.type === 'function-call') {
           const response = message.functionCall?.parameters?.response;
           if (response) {
@@ -172,7 +149,6 @@ export const VapiAssistant: React.FC = () => {
           }
         }
 
-        // Handle other message types
         if (message.type === 'conversation-update' && message.conversation) {
           const lastMessage = message.conversation[message.conversation.length - 1];
           if (lastMessage && lastMessage.role === 'assistant' && lastMessage.message) {
@@ -189,16 +165,14 @@ export const VapiAssistant: React.FC = () => {
         updateStatus('❌ Connection error', 'error');
         addMessage('ai', 'Sorry, I encountered an error. Please try again or switch to text mode.');
       });
-
     } catch (error) {
       console.error('[Vapi] Initialization failed:', error);
       updateStatus('❌ Failed to initialize voice', 'error');
     }
   };
 
-  // Voice Control
+  // ---------- Voice control ----------
   const startVoice = async () => {
-
     if (micPermission === 'prompt') {
       const granted = await requestMicPermission();
       if (!granted) {
@@ -243,26 +217,23 @@ export const VapiAssistant: React.FC = () => {
     setIsListening(false);
   };
 
-  // Mode Management
+  // ---------- Mode ----------
   const handleModeChange = (mode: 'voice' | 'text') => {
     setCurrentMode(mode);
-    
     if (mode === 'voice') {
       startVoice();
     } else {
       stopVoice();
       updateStatus('💬 Text mode active', 'inactive');
-      // The streaming system will handle the conversation flow naturally
     }
   };
 
-  // Stream message handler for real-time chat
+  // ---------- Streaming text chat ----------
   const streamMessage = async (userMessage: string, chatHistory: Message[]) => {
     updateStatus('🤔 AI thinking...', 'thinking');
 
-    // Check backend status first
     if (backendStatus === 'disconnected') {
-      const errorMsg = import.meta.env.DEV 
+      const errorMsg = import.meta.env.DEV
         ? '⚠️ Backend server is not running on port 3001. Please start the server.'
         : '⚠️ Backend server is not deployed. Text chat requires a deployed backend. Voice chat should still work!';
       addMessage('ai', errorMsg);
@@ -270,86 +241,73 @@ export const VapiAssistant: React.FC = () => {
       return;
     }
 
-    // Convert internal messages to OpenAI format
-    const openAIMessages = chatHistory.map(msg => ({
-      role: msg.type === 'user' ? 'user' as const : 'assistant' as const,
-      content: msg.content
+    const openAIMessages = chatHistory.map((msg) => ({
+      role: msg.type === 'user' ? ('user' as const) : ('assistant' as const),
+      content: msg.content,
     }));
-
-    // Add the new user message
     openAIMessages.push({ role: 'user', content: userMessage });
 
     const apiUrl = getApiUrl();
     const streamUrl = `${apiUrl}/api/text/stream`;
 
     try {
-      
       const response = await fetch(streamUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: openAIMessages })
+        body: JSON.stringify({ messages: openAIMessages }),
       });
 
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      if (!response.body) {
-        throw new Error('No response body');
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.body) throw new Error('No response body');
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
 
       let assistantText = '';
-      let messageIndex = messages.length; // Index for the streaming message
+      const messageIndex = messages.length;
 
-      // Add initial AI message for streaming (with placeholder text)
-      setMessages(prev => [...prev, { type: 'ai', content: '...', isTranscript: false }]);
+      setMessages((prev) => [...prev, { type: 'ai', content: '...', isTranscript: false }]);
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value, { stream: true });
-        
-        // Parse SSE format "data: {...}\n\n"
+
         for (const line of chunk.split('\n')) {
           if (!line.startsWith('data:')) continue;
-          
+
           try {
             const data = JSON.parse(line.slice(5));
-            
+
             if (data.delta) {
               assistantText += data.delta;
-              // Update the streaming message in real-time
-              setMessages(prev => {
+              setMessages((prev) => {
                 const newMessages = [...prev];
                 if (newMessages[messageIndex]) {
                   newMessages[messageIndex] = {
                     type: 'ai',
                     content: assistantText || '...',
-                    isTranscript: false
+                    isTranscript: false,
                   };
                 }
                 return newMessages;
               });
             }
-            
+
             if (data.done) {
               updateStatus('💬 Text mode active', 'inactive');
             }
-            
+
             if (data.error) {
               console.error('Stream error:', data.error);
-              setMessages(prev => {
+              setMessages((prev) => {
                 const newMessages = [...prev];
                 if (newMessages[messageIndex]) {
                   newMessages[messageIndex] = {
                     type: 'ai',
                     content: 'Sorry, I encountered an error. Please try again.',
-                    isTranscript: false
+                    isTranscript: false,
                   };
                 }
                 return newMessages;
@@ -362,75 +320,73 @@ export const VapiAssistant: React.FC = () => {
         }
       }
 
-      // If no text was received, show an error
       if (!assistantText.trim()) {
-        setMessages(prev => {
+        setMessages((prev) => {
           const newMessages = [...prev];
           if (newMessages[messageIndex]) {
             newMessages[messageIndex] = {
               type: 'ai',
-              content: 'I apologize, but I didn\'t receive a proper response. Could you try again?',
-              isTranscript: false
+              content: "I apologize, but I didn't receive a proper response. Could you try again?",
+              isTranscript: false,
             };
           }
           return newMessages;
         });
       }
 
-      // Check if conversation seems complete and extract lead
-      if (assistantText.toLowerCase().includes('consent') || 
-          assistantText.toLowerCase().includes('contact you')) {
-        await extractLeadFromConversation([...messages, 
+      if (
+        assistantText.toLowerCase().includes('consent') ||
+        assistantText.toLowerCase().includes('contact you')
+      ) {
+        await extractLeadFromConversation([
+          ...messages,
           { type: 'user', content: userMessage, isTranscript: false },
-          { type: 'ai', content: assistantText, isTranscript: false }
+          { type: 'ai', content: assistantText, isTranscript: false },
         ]);
       }
-
     } catch (error) {
       console.error('Streaming error:', error);
-      // Fallback to regular chat API if streaming fails
       updateStatus('💬 Using fallback chat...', 'thinking');
-      
+
       try {
         const chatUrl = `${apiUrl}/api/chat`;
         const fallbackResponse = await fetch(chatUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: openAIMessages })
+          body: JSON.stringify({ messages: openAIMessages }),
         });
-        
+
         if (fallbackResponse.ok) {
           const data = await fallbackResponse.json();
           addMessage('ai', data.reply || 'Sorry, I encountered an error. Please try again.');
         } else {
-          addMessage('ai', 'I\'m having trouble connecting. Please check your connection and try again.');
+          addMessage('ai', "I'm having trouble connecting. Please check your connection and try again.");
         }
       } catch (fallbackError) {
         console.error('Fallback error:', fallbackError);
-        addMessage('ai', 'I\'m having trouble connecting. Please check your connection and try again.');
+        addMessage('ai', "I'm having trouble connecting. Please check your connection and try again.");
       }
-      
+
       updateStatus('💬 Text mode active', 'inactive');
     }
   };
 
-  // Extract lead from conversation when appropriate
+  // ---------- Lead extraction ----------
   const extractLeadFromConversation = async (conversationMessages: Message[]) => {
     try {
       const response = await fetch(`${getApiUrl()}/api/text/extract-lead`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript: conversationMessages })
+        body: JSON.stringify({ transcript: conversationMessages }),
       });
 
       const data = await response.json();
-      
+
       if (data.lead && data.lead.consent) {
-        // Save to existing lead submission endpoint
         await fetch(`${getApiUrl()}/api/leads`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lead: data.lead })
+          body: JSON.stringify({ lead: data.lead }),
         });
       }
     } catch (error) {
@@ -438,21 +394,19 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  // Text Chat - Enhanced with streaming
+  // ---------- Text send ----------
   const sendTextMessage = async () => {
     const message = textInput.trim();
     if (!message) return;
 
-
     addMessage('user', message);
     setTextInput('');
 
-    // If voice is connected, prefer sending to Vapi call
     if (isConnected && vapiRef.current) {
       try {
         vapiRef.current.send({
           type: 'add-message',
-          message: { role: 'user', content: message }
+          message: { role: 'user', content: message },
         });
         return;
       } catch (error) {
@@ -460,7 +414,6 @@ export const VapiAssistant: React.FC = () => {
       }
     }
 
-    // Use streaming for better UX in text mode
     await streamMessage(message, messages);
   };
 
@@ -471,24 +424,21 @@ export const VapiAssistant: React.FC = () => {
     }
   };
 
-  // Check backend status on mount
   useEffect(() => {
     checkBackendStatus();
   }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (vapiRef.current && isConnected) {
-        vapiRef.current.stop();
-      }
+      if (vapiRef.current && isConnected) vapiRef.current.stop();
     };
   }, [isConnected]);
 
+  // ---------- Render ----------
   return (
     <>
       {/* Floating Icon */}
-      <div 
+      <div
         className="floating-icon"
         onClick={() => setIsOpen(true)}
         role="button"
@@ -497,123 +447,147 @@ export const VapiAssistant: React.FC = () => {
         <Mic size={30} color="white" />
       </div>
 
-      {/* Holographic Interface */}
-      <div className={`holographic-interface ${isOpen ? 'active' : ''}`}> 
-        <button 
-          className="close-btn"
-          onClick={() => {
-            setIsOpen(false);
-            stopVoice();
+      {/* ===== FULLSCREEN OVERLAY via PORTAL (with inline fallback styles) ===== */}
+      {createPortal(
+        <div
+          className={`holographic-interface ${isOpen ? 'active' : ''}`}
+          style={{
+            // Fallback styles in case CSS fails to load on host/embedded page
+            position: 'fixed',
+            inset: 0,
+            width: '100vw',
+            height: '100vh',
+            display: isOpen ? 'flex' : 'none',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2000,
+            // keep backdrop subtle—you can adjust or remove if your CSS handles bg
+            background:
+              'linear-gradient(135deg, rgba(4,7,20,0.85), rgba(12,16,35,0.85))',
+            backdropFilter: 'blur(18px)',
           }}
-          aria-label="Close assistant"
         >
-          <X size={16} />
-        </button>
+          <button
+            className="close-btn"
+            onClick={() => {
+              setIsOpen(false);
+              stopVoice();
+            }}
+            aria-label="Close assistant"
+            style={{
+              // Fallback close button styles
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              width: 36,
+              height: 36,
+              borderRadius: 9999,
+              border: '1px solid rgba(255,255,255,0.35)',
+              background: 'rgba(255,255,255,0.08)',
+              cursor: 'pointer',
+            }}
+          >
+            <X size={16} />
+          </button>
 
-        <div className="interface-container">
-          {/* VOICE SECTION */}
-          {currentMode === 'voice' && (
-            <>
-              <div className="voice-interface">
-                <div className="voice-ring ring-outer"></div>
-                <div className="voice-ring ring-middle"></div>
-                <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
-                  <Mic 
-                    className={`mic-icon ${isListening ? 'listening' : ''}`}
-                    size={30}
-                  />
+          <div className="interface-container" style={{ maxWidth: 560, width: '92%' }}>
+            {/* VOICE SECTION */}
+            {currentMode === 'voice' && (
+              <>
+                <div className="voice-interface">
+                  <div className="voice-ring ring-outer"></div>
+                  <div className="voice-ring ring-middle"></div>
+                  <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}>
+                    <Mic className={`mic-icon ${isListening ? 'listening' : ''}`} size={30} />
+                  </div>
                 </div>
-              </div>
-              <div className="interface-text">
-                <h1 className="interface-title">Voice Assistant</h1>
-                <p className="interface-subtitle">Tap the mic and start speaking.</p>
-              </div>
-              <div className="controls">
-                <button 
-                  className={`control-btn voice-btn active`}
-                  onClick={startVoice}
-                >
-                  Start Voice
-                </button>
-                <button 
-                  className={`control-btn text-btn`}
-                  onClick={() => handleModeChange('text')}
-                >
-                  Switch to Text
-                </button>
-              </div>
-              <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="voice-bar"></div>
-                ))}
-              </div>
-            </>
-          )}
 
-          {/* TEXT SECTION */}
-          {currentMode === 'text' && (
-            <>
-              <div className="interface-text">
-                <h1 className="interface-title">Text Chat</h1>
-              </div>
-              <div className="chat-container active">
-                <div className="chat-messages" ref={chatMessagesRef}>
-                  {messages.map((message, index) => (
-                    <div 
-                      key={index}
-                      className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
-                    >
-                      {message.content}
-                    </div>
-                  ))}
+                <div className="interface-text">
+                  <h1 className="interface-title">Voice Assistant</h1>
+                  <p className="interface-subtitle">Tap the mic and start speaking.</p>
                 </div>
-                <div className="chat-input-container chat-input-row">
-                  <input
-                    type="text"
-                    className="chat-input chat-input-min"
-                    placeholder="Type your message..."
-                    value={textInput}
-                    onChange={(e) => setTextInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                  />
-                  <button
-                    className="send-btn send-btn-nomargin"
-                    onClick={sendTextMessage}
-                    disabled={!textInput.trim()}
-                    aria-label="Send message"
-                  >
-                    <Send size={16} />
+
+                <div className="controls">
+                  <button className={`control-btn voice-btn active`} onClick={startVoice}>
+                    Start Voice
+                  </button>
+                  <button className={`control-btn text-btn`} onClick={() => handleModeChange('text')}>
+                    Switch to Text
                   </button>
                 </div>
-              </div>
-              <div className="controls controls-side-by-side controls-text-spacing">
-                <button 
-                  className={`control-btn voice-btn`}
-                  onClick={() => handleModeChange('voice')}
-                >
-                  Switch to Voice
-                </button>
-                <button 
-                  className={`control-btn text-btn active`}
-                  disabled
-                >
-                  Text Chat
-                </button>
-              </div>
-            </>
-          )}
 
-          {/* Status */}
-          <div className={`status ${status.className}`}> 
-            {status.text}
-            <span className={`backend-status ${backendStatus}`}>
-              {backendStatus === 'checking' && ' • Checking backend...'}
-              {backendStatus === 'connected' && ' • Backend connected ✅'}
-              {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
-            </span>
+                <div className={`voice-visualizer ${isListening ? 'active' : ''}`}>
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="voice-bar"></div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* TEXT SECTION */}
+            {currentMode === 'text' && (
+              <>
+                <div className="interface-text">
+                  <h1 className="interface-title">Text Chat</h1>
+                </div>
+
+                <div className="chat-container active">
+                  <div className="chat-messages" ref={chatMessagesRef}>
+                    {messages.map((message, index) => (
+                      <div
+                        key={index}
+                        className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                      >
+                        {message.content}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="chat-input-container chat-input-row">
+                    <input
+                      type="text"
+                      className="chat-input chat-input-min"
+                      placeholder="Type your message..."
+                      value={textInput}
+                      onChange={(e) => setTextInput(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                    />
+                    <button
+                      className="send-btn send-btn-nomargin"
+                      onClick={sendTextMessage}
+                      disabled={!textInput.trim()}
+                      aria-label="Send message"
+                    >
+                      <Send size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="controls controls-side-by-side controls-text-spacing">
+                  <button className={`control-btn voice-btn`} onClick={() => handleModeChange('voice')}>
+                    Switch to Voice
+                  </button>
+                  <button className={`control-btn text-btn active`} disabled>
+                    Text Chat
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* STATUS */}
+            <div className={`status ${status.className}`}>
+              {status.text}
+              <span className={`backend-status ${backendStatus}`}>
+                {backendStatus === 'checking' && ' • Checking backend...'}
+                {backendStatus === 'connected' && ' • Backend connected ✅'}
+                {backendStatus === 'disconnected' && ' • Backend offline ⚠️'}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
+        </div>,
+        document.body
+      )}
+      {/* ===== END OVERLAY ===== */}
     </>
   );
 };

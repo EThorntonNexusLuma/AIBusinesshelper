@@ -1,8 +1,7 @@
 /* Corner widget container for iframe embed */
 .corner-widget-container {
-  width: 360px;
-  height: 460px;
-  border-radius: 16px;
+  min-height: 100vh;
+  width: 100vw;
   box-shadow: 0 4px 24px rgba(0,0,0,0.18);
   overflow: hidden;
 }
@@ -44,8 +43,17 @@
 }
 
 .interface-container { 
-  position: relative; max-width: 500px; width: 90%; padding: 60px 40px; text-align: center; 
-  animation: holographicFloat 4s ease-in-out infinite; 
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  animation: holographicFloat 4s ease-in-out infinite;
 }
 
 @keyframes holographicFloat { 
