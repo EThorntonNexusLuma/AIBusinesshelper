@@ -402,5 +402,3 @@ export const VapiAssistant: React.FC = () => {
     </>
   );
 };
-  );
-};
