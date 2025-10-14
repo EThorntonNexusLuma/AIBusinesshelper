@@ -288,16 +288,23 @@ export default function VapiAssistant() {
       {/* Holographic Interface - only render when open */}
       {isOpen && (
         <div className="holographic-interface active"> 
+          {/* Close button - positioned outside container for accessibility */}
           <button 
             className="close-btn"
             onClick={() => {
+              console.log('[Close] Button clicked');
               setIsOpen(false);
               stopVoice();
             }}
             aria-label="Close assistant"
-            style={{ zIndex: 3000 }}
+            style={{ 
+              zIndex: 9999,
+              pointerEvents: 'auto',
+              position: 'absolute',
+              cursor: 'pointer'
+            }}
           >
-            <X size={16} />
+            <X size={20} />
           </button>
 
           <div className="interface-container">
