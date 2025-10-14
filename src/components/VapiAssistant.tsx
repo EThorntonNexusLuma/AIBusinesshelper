@@ -303,34 +303,40 @@ export const VapiAssistant: React.FC = () => {
           </button>
 
           <div className="interface-container">
-            {/* Header Text */}
-            <div className="interface-text">
-              <h2 className="interface-title">
-                Advanced Voice AI Assistant
-              </h2>
-              <p className="interface-subtitle">
-                Speak naturally or type your questions. I'm here to help!
-              </p>
-            </div>
-
-            {/* Voice Interface */}
-            <div className="voice-interface">
-              <div className="voice-ring ring-outer"></div>
-              <div className="voice-ring ring-middle"></div>
-              <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
-                <Mic 
-                  className={`mic-icon ${isListening ? 'listening' : ''}`}
-                  size={32}
-                />
+            {/* Header Text - Only show in voice mode */}
+            {currentMode === 'voice' && (
+              <div className="interface-text">
+                <h2 className="interface-title">
+                  Advanced Voice AI Assistant
+                </h2>
+                <p className="interface-subtitle">
+                  Speak naturally or type your questions. I'm here to help!
+                </p>
               </div>
-            </div>
+            )}
 
-            {/* Voice Visualizer */}
-            <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="voice-bar"></div>
-              ))}
-            </div>
+            {/* Voice Interface - Only show in voice mode */}
+            {currentMode === 'voice' && (
+              <>
+                <div className="voice-interface">
+                  <div className="voice-ring ring-outer"></div>
+                  <div className="voice-ring ring-middle"></div>
+                  <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
+                    <Mic 
+                      className={`mic-icon ${isListening ? 'listening' : ''}`}
+                      size={32}
+                    />
+                  </div>
+                </div>
+
+                {/* Voice Visualizer */}
+                <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="voice-bar"></div>
+                  ))}
+                </div>
+              </>
+            )}
 
             {/* Mode Toggle Controls */}
             <div className="controls controls-side-by-side">
@@ -349,37 +355,39 @@ export const VapiAssistant: React.FC = () => {
               </button>
             </div>
 
-            {/* Chat Container */}
-            <div className={`chat-container ${currentMode === 'text' ? 'active' : ''}`}> 
-              <div className="chat-messages" ref={chatMessagesRef}>
-                {messages.map((message, index) => (
-                  <div 
-                    key={index}
-                    className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+            {/* Chat Container - Only show in text mode */}
+            {currentMode === 'text' && (
+              <div className="chat-container active">
+                <div className="chat-messages" ref={chatMessagesRef}>
+                  {messages.map((message, index) => (
+                    <div 
+                      key={index}
+                      className={`message ${message.type}-message ${message.isTranscript ? 'transcript-message' : ''}`}
+                    >
+                      {message.content}
+                    </div>
+                  ))}
+                </div>
+                <div className="chat-input-container">
+                  <input
+                    type="text"
+                    className="chat-input"
+                    placeholder="Type your message..."
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                  <button
+                    className="send-btn"
+                    onClick={sendTextMessage}
+                    disabled={!textInput.trim()}
+                    aria-label="Send message"
                   >
-                    {message.content}
-                  </div>
-                ))}
+                    <Send size={16} />
+                  </button>
+                </div>
               </div>
-              <div className="chat-input-container">
-                <input
-                  type="text"
-                  className="chat-input"
-                  placeholder="Type your message..."
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-                <button
-                  className="send-btn"
-                  onClick={sendTextMessage}
-                  disabled={!textInput.trim()}
-                  aria-label="Send message"
-                >
-                  <Send size={16} />
-                </button>
-              </div>
-            </div>
+            )}
 
             {/* Status */}
             <div className={`status ${status.className}`}> 
