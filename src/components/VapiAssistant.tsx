@@ -12,7 +12,7 @@ interface Message {
   isTranscript?: boolean;
 }
 
-export const VapiAssistant: React.FC = () => {
+export default function VapiAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -276,13 +276,18 @@ export const VapiAssistant: React.FC = () => {
         onClick={() => setIsOpen(true)}
         role="button"
         aria-label="Open AI Assistant"
+        style={{ 
+          pointerEvents: isOpen ? 'none' : 'auto', 
+          opacity: isOpen ? 0 : 1,
+          transition: 'opacity 0.3s ease'
+        }}
       >
         <Mic size={30} color="white" />
       </div>
 
       {/* Holographic Interface - only render when open */}
       {isOpen && (
-        <div className={`holographic-interface active`}> 
+        <div className="holographic-interface active"> 
           <button 
             className="close-btn"
             onClick={() => {
@@ -290,11 +295,22 @@ export const VapiAssistant: React.FC = () => {
               stopVoice();
             }}
             aria-label="Close assistant"
+            style={{ zIndex: 3000 }}
           >
             <X size={16} />
           </button>
 
           <div className="interface-container">
+            {/* Header Text */}
+            <div className="interface-text">
+              <h2 className="interface-title">
+                Advanced Voice AI Assistant
+              </h2>
+              <p className="interface-subtitle">
+                Speak naturally or type your questions. I'm here to help!
+              </p>
+            </div>
+
             {/* Voice Interface */}
             <div className="voice-interface">
               <div className="voice-ring ring-outer"></div>
@@ -302,39 +318,33 @@ export const VapiAssistant: React.FC = () => {
               <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
                 <Mic 
                   className={`mic-icon ${isListening ? 'listening' : ''}`}
-                  <>
-                    {/* Floating Icon - always visible */}
-                    <div 
-                      className="floating-icon"
-                      onClick={() => setIsOpen(true)}
-                      role="button"
-                      aria-label="Open AI Assistant"
-                      style={{ pointerEvents: isOpen ? 'none' : 'auto', opacity: isOpen ? 0.5 : 1 }}
-                    >
-                      <Mic size={30} color="white" />
-                    </div>
+                  size={32}
+                />
+              </div>
+            </div>
 
-                    {/* Holographic Interface - only render when open */}
-                    {isOpen && (
-                      <div className={`holographic-interface active`}> 
-                        <button 
-                          className="close-btn"
-                          onClick={() => {
-                            setIsOpen(false);
-                            stopVoice();
-                          }}
-                          aria-label="Close assistant"
-                        >
-                          <X size={16} />
-                        </button>
-                        {/* ...existing code... */}
-                      </div>
-                    )}
-                  </>
+            {/* Voice Visualizer */}
             <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="voice-bar"></div>
               ))}
+            </div>
+
+            {/* Mode Toggle Controls */}
+            <div className="controls controls-side-by-side">
+              <button
+                className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
+                onClick={() => handleModeChange('voice')}
+                disabled={isConnected}
+              >
+                Voice Chat
+              </button>
+              <button
+                className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
+                onClick={() => handleModeChange('text')}
+              >
+                Text Chat
+              </button>
             </div>
 
             {/* Chat Container */}
@@ -378,4 +388,4 @@ export const VapiAssistant: React.FC = () => {
       )}
     </>
   );
-};
+}
