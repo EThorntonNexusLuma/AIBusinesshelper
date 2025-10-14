@@ -20,6 +20,7 @@
   icon.innerHTML = '💬';
   icon.type = 'button';
   icon.setAttribute('aria-label', 'Open Nexus Luma AI Assistant');
+  icon.setAttribute('aria-expanded', 'false');
   
   // Apply styles directly
   icon.style.position = 'fixed';
@@ -50,19 +51,25 @@
   // Create the iframe container for corner widget
   var iframeContainer = document.createElement('div');
   iframeContainer.id = 'nxl-iframe-container';
+  iframeContainer.setAttribute('role', 'region');
+  iframeContainer.setAttribute('aria-label', 'Nexus Luma AI Assistant');
   
   // Corner styles
   iframeContainer.style.position = 'fixed';
   iframeContainer.style.bottom = '30px';
   iframeContainer.style.right = '30px';
   iframeContainer.style.width = '370px';
-  iframeContainer.style.height = '480px';
+  iframeContainer.style.height = '520px';
   iframeContainer.style.zIndex = '2147483646'; // Just below icon
   iframeContainer.style.display = 'none';
   iframeContainer.style.background = '#fff';
-  iframeContainer.style.borderRadius = '16px';
-  iframeContainer.style.boxShadow = '0 4px 24px rgba(0,0,0,0.18)';
+  iframeContainer.style.borderRadius = '14px';
+  iframeContainer.style.boxShadow = '0 20px 60px rgba(0,0,0,0.14)';
   iframeContainer.style.pointerEvents = 'auto';
+  iframeContainer.style.overflow = 'hidden';
+  iframeContainer.style.transition = 'transform 240ms ease, opacity 200ms ease';
+  iframeContainer.style.transform = 'translateY(8px)';
+  iframeContainer.style.opacity = '0';
   
   console.log('[NXL] Iframe container created');
 

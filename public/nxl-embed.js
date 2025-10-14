@@ -20,6 +20,7 @@
   icon.innerHTML = '💬';
   icon.type = 'button';
   icon.setAttribute('aria-label', 'Open Nexus Luma AI Assistant');
+  icon.setAttribute('aria-expanded', 'false');
   
   // Apply styles directly
   icon.style.position = 'fixed';
@@ -47,20 +48,28 @@
   
   console.log('[NXL] Chat icon created with ID:', icon.id);
   
-  // Create the iframe container with enhanced visibility
+  // Create the iframe container (panel) for corner widget
   var iframeContainer = document.createElement('div');
   iframeContainer.id = 'nxl-iframe-container';
+  iframeContainer.setAttribute('role', 'region');
+  iframeContainer.setAttribute('aria-label', 'Nexus Luma AI Assistant');
   
   // Apply styles directly for better control
   iframeContainer.style.position = 'fixed';
-  iframeContainer.style.top = '0';
-  iframeContainer.style.left = '0';
-  iframeContainer.style.width = '100vw';
-  iframeContainer.style.height = '100vh';
+  iframeContainer.style.bottom = '100px';
+  iframeContainer.style.right = '30px';
+  iframeContainer.style.width = '360px';
+  iframeContainer.style.height = '640px';
   iframeContainer.style.zIndex = '2147483646'; // Just below icon
   iframeContainer.style.display = 'none';
-  iframeContainer.style.background = 'rgba(0, 0, 0, 0.8)';
+  iframeContainer.style.background = '#fff';
+  iframeContainer.style.borderRadius = '14px';
+  iframeContainer.style.boxShadow = '0 20px 60px rgba(0, 0, 0, 0.14)';
   iframeContainer.style.pointerEvents = 'auto';
+  iframeContainer.style.overflow = 'hidden';
+  iframeContainer.style.transition = 'transform 240ms ease, opacity 200ms ease';
+  iframeContainer.style.transform = 'translateY(8px)';
+  iframeContainer.style.opacity = '0';
   
   console.log('[NXL] Iframe container created');
 
@@ -70,7 +79,7 @@
   iframe.style.width = '100%';
   iframe.style.height = '100%';
   iframe.style.border = 'none';
-  iframe.style.background = 'white';
+  iframe.style.background = 'transparent';
   iframe.setAttribute('allow', 'microphone; camera; autoplay');
   iframe.setAttribute('title', 'Nexus Luma AI Assistant');
   
@@ -87,19 +96,13 @@
     console.log('[NXL] Current isOpen state:', isOpen);
     
     isOpen = true;
-    
-    // Force visibility with multiple properties
     iframeContainer.style.display = 'block';
-    iframeContainer.style.visibility = 'visible';
-    iframeContainer.style.opacity = '1';
-    iframeContainer.style.zIndex = '2147483646';
-    
-    // Hide icon
-    icon.style.display = 'none';
-    icon.style.visibility = 'hidden';
+    requestAnimationFrame(function() {
+      iframeContainer.style.transform = 'translateY(0)';
+      iframeContainer.style.opacity = '1';
+    });
     icon.style.opacity = '0';
-    
-    // Prevent body scroll
+    icon.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
     
     console.log('[NXL] Widget styles applied - forcing visibility');
@@ -136,26 +139,17 @@
     console.log('[NXL] Current isOpen state:', isOpen);
     
     isOpen = false;
-    
-    // Send close message to iframe to end any active calls
     try {
       iframe.contentWindow.postMessage('nxl:close', '*');
       console.log('[NXL] Close message sent to iframe to end calls');
     } catch (e) {
       console.log('[NXL] Could not send close message:', e);
     }
-    
-    // Force hide container with multiple properties
-    iframeContainer.style.display = 'none';
-    iframeContainer.style.visibility = 'hidden';
+    iframeContainer.style.transform = 'translateY(8px)';
     iframeContainer.style.opacity = '0';
-    
-    // Show icon
-    icon.style.display = 'flex';
-    icon.style.visibility = 'visible';
+    setTimeout(function(){ iframeContainer.style.display = 'none'; }, 220);
     icon.style.opacity = '1';
-    
-    // Restore body scroll
+    icon.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
     
     console.log('[NXL] Widget styles applied - forcing hidden');
