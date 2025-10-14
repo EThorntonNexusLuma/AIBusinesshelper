@@ -287,23 +287,34 @@ export const VapiAssistant: React.FC = () => {
 
       {/* Holographic Interface - only render when open */}
       {isOpen && (
-        <div className="holographic-interface active"> 
-          {/* Small X button in corner */}
+        <div 
+          className="holographic-interface active"
+          onClick={(e) => {
+            // Close when clicking the background overlay
+            if (e.target === e.currentTarget) {
+              console.log('[Close] Clicked overlay background');
+              setIsOpen(false);
+              stopVoice();
+            }
+          }}
+        > 
+          {/* Main close button - outside container, top right */}
           <button 
-            className="close-btn"
+            className="main-close-btn"
             onClick={(e) => {
               e.stopPropagation();
-              console.log('[Close] X button clicked');
+              console.log('[Close] Main close - returning to floating icon');
               setIsOpen(false);
               stopVoice();
             }}
-            aria-label="Close assistant"
+            aria-label="Close"
+            title="Close"
           >
-            <X size={16} />
+            <X size={28} strokeWidth={2.5} />
           </button>
 
           <div className="interface-container">
-            {/* Mode Toggle Controls - At the top */}
+            {/* Mode Toggle Controls - Enhanced styling with emojis */}
             <div className="mode-toggle-container">
               <button
                 className={`mode-toggle-btn ${currentMode === 'voice' ? 'active' : ''}`}
@@ -311,7 +322,7 @@ export const VapiAssistant: React.FC = () => {
                 disabled={isConnected}
                 title="Voice Chat"
               >
-                <Mic size={20} />
+                <span className="mode-icon">🗣️</span>
                 <span>Voice</span>
               </button>
               <button
@@ -319,7 +330,7 @@ export const VapiAssistant: React.FC = () => {
                 onClick={() => handleModeChange('text')}
                 title="Text Chat"
               >
-                <Send size={20} />
+                <span className="mode-icon">💬</span>
                 <span>Text</span>
               </button>
             </div>
