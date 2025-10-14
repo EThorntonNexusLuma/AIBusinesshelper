@@ -1,3 +1,11 @@
+/* Corner widget container for iframe embed */
+.corner-widget-container {
+  width: 360px;
+  height: 460px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
 /**
  * © 2025 Nexus Luma - All Rights Reserved
  * LumX AI Assistant Holographic Interface Styles
