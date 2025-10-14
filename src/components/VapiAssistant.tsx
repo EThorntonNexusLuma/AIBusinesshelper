@@ -12,7 +12,7 @@ interface Message {
   isTranscript?: boolean;
 }
 
-export default function VapiAssistant() {
+export const VapiAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -287,26 +287,17 @@ export default function VapiAssistant() {
 
       {/* Holographic Interface - only render when open */}
       {isOpen && (
-        <div className="holographic-interface active"> 
-          {/* Close button - positioned outside container for accessibility */}
-          <button 
-            className="close-btn"
-            onClick={() => {
-              console.log('[Close] Button clicked');
+        <div 
+          className="holographic-interface active"
+          onClick={(e) => {
+            // Close if clicking the background (not the content)
+            if (e.target === e.currentTarget) {
+              console.log('[Close] Background clicked');
               setIsOpen(false);
               stopVoice();
-            }}
-            aria-label="Close assistant"
-            style={{ 
-              zIndex: 9999,
-              pointerEvents: 'auto',
-              position: 'absolute',
-              cursor: 'pointer'
-            }}
-          >
-            <X size={20} />
-          </button>
-
+            }
+          }}
+        > 
           <div className="interface-container">
             {/* Header Text */}
             <div className="interface-text">
@@ -390,6 +381,19 @@ export default function VapiAssistant() {
             <div className={`status ${status.className}`}> 
               {status.text}
             </div>
+
+            {/* Close Button - Big and Obvious */}
+            <button
+              className="close-widget-btn"
+              onClick={() => {
+                console.log('[Close] Widget close button clicked');
+                setIsOpen(false);
+                stopVoice();
+              }}
+            >
+              <X size={20} style={{ marginRight: '8px' }} />
+              Close Assistant
+            </button>
           </div>
         </div>
       )}
