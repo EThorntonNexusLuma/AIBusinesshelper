@@ -270,19 +270,26 @@ export const VapiAssistant: React.FC = () => {
 
   return (
     <>
-      {/* Floating Icon */}
+      {/* Floating Icon - transforms to X when open */}
       <div 
-        className="floating-icon"
-        onClick={() => setIsOpen(true)}
-        role="button"
-        aria-label="Open AI Assistant"
-        style={{ 
-          pointerEvents: isOpen ? 'none' : 'auto', 
-          opacity: isOpen ? 0 : 1,
-          transition: 'opacity 0.3s ease'
+        className={`floating-icon ${isOpen ? 'active' : ''}`}
+        onClick={() => {
+          if (isOpen) {
+            console.log('[Close] Closing via floating icon X');
+            setIsOpen(false);
+            stopVoice();
+          } else {
+            setIsOpen(true);
+          }
         }}
+        role="button"
+        aria-label={isOpen ? "Close AI Assistant" : "Open AI Assistant"}
       >
-        <Mic size={30} color="white" />
+        {isOpen ? (
+          <X size={30} color="white" strokeWidth={2.5} />
+        ) : (
+          <Mic size={30} color="white" />
+        )}
       </div>
 
       {/* Holographic Interface - only render when open */}
@@ -297,22 +304,7 @@ export const VapiAssistant: React.FC = () => {
               stopVoice();
             }
           }}
-        > 
-          {/* Main close button - outside container, top right */}
-          <button 
-            className="main-close-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('[Close] Main close - returning to floating icon');
-              setIsOpen(false);
-              stopVoice();
-            }}
-            aria-label="Close"
-            title="Close"
-          >
-            <X size={28} strokeWidth={2.5} />
-          </button>
-
+        >
           <div className="interface-container">
             {/* Mode Toggle Controls - Enhanced styling with emojis */}
             <div className="mode-toggle-container">
