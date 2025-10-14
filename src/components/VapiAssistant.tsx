@@ -287,17 +287,21 @@ export const VapiAssistant: React.FC = () => {
 
       {/* Holographic Interface - only render when open */}
       {isOpen && (
-        <div 
-          className="holographic-interface active"
-          onClick={(e) => {
-            // Close if clicking the background (not the content)
-            if (e.target === e.currentTarget) {
-              console.log('[Close] Background clicked');
+        <div className="holographic-interface active"> 
+          {/* Small X button in corner */}
+          <button 
+            className="close-btn"
+            onClick={(e) => {
+              e.stopPropagation();
+              console.log('[Close] X button clicked');
               setIsOpen(false);
               stopVoice();
-            }
-          }}
-        > 
+            }}
+            aria-label="Close assistant"
+          >
+            <X size={16} />
+          </button>
+
           <div className="interface-container">
             {/* Header Text */}
             <div className="interface-text">
@@ -381,22 +385,11 @@ export const VapiAssistant: React.FC = () => {
             <div className={`status ${status.className}`}> 
               {status.text}
             </div>
-
-            {/* Close Button - Big and Obvious */}
-            <button
-              className="close-widget-btn"
-              onClick={() => {
-                console.log('[Close] Widget close button clicked');
-                setIsOpen(false);
-                stopVoice();
-              }}
-            >
-              <X size={20} style={{ marginRight: '8px' }} />
-              Close Assistant
-            </button>
           </div>
         </div>
       )}
     </>
+  );
+};
   );
 }
