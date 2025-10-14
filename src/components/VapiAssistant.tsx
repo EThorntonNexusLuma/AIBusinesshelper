@@ -302,34 +302,35 @@ export const VapiAssistant: React.FC = () => {
               <div className={`voice-ring ring-inner ${isListening ? 'listening' : ''}`}> 
                 <Mic 
                   className={`mic-icon ${isListening ? 'listening' : ''}`}
-                  size={30}
-                />
-              </div>
-            </div>
+                  <>
+                    {/* Floating Icon - always visible */}
+                    <div 
+                      className="floating-icon"
+                      onClick={() => setIsOpen(true)}
+                      role="button"
+                      aria-label="Open AI Assistant"
+                      style={{ pointerEvents: isOpen ? 'none' : 'auto', opacity: isOpen ? 0.5 : 1 }}
+                    >
+                      <Mic size={30} color="white" />
+                    </div>
 
-            {/* Interface Text */}
-            <div className="interface-text">
-              <h1 className="interface-title">Advanced Voice AI Assistant</h1>
-              <p className="interface-subtitle">Speak naturally or type your questions. I'm here to help!</p>
-            </div>
-
-            {/* Controls */}
-            <div className="controls">
-              <button 
-                className={`control-btn voice-btn ${currentMode === 'voice' ? 'active' : ''}`}
-                onClick={() => handleModeChange('voice')}
-              >
-                Voice Chat
-              </button>
-              <button 
-                className={`control-btn text-btn ${currentMode === 'text' ? 'active' : ''}`}
-                onClick={() => handleModeChange('text')}
-              >
-                Text Chat
-              </button>
-            </div>
-
-            {/* Voice Visualizer */}
+                    {/* Holographic Interface - only render when open */}
+                    {isOpen && (
+                      <div className={`holographic-interface active`}> 
+                        <button 
+                          className="close-btn"
+                          onClick={() => {
+                            setIsOpen(false);
+                            stopVoice();
+                          }}
+                          aria-label="Close assistant"
+                        >
+                          <X size={16} />
+                        </button>
+                        {/* ...existing code... */}
+                      </div>
+                    )}
+                  </>
             <div className={`voice-visualizer ${isListening ? 'active' : ''}`}> 
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="voice-bar"></div>
