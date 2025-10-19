@@ -19,7 +19,7 @@
   width: 70px; 
   height: 70px; 
   border-radius: 50%; 
-  background: linear-gradient(135deg, #7A3FFF, #4CC3FF); 
+  background: linear-gradient(135deg, #ffa600, #c8c8c8); 
   cursor: pointer; 
   display: flex; 
   align-items: center; 
@@ -44,13 +44,13 @@
 /* Floating icon when widget is open - transforms to X */
 .floating-icon.active {
   background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.95) 0%,
-    rgba(220, 38, 38, 1) 100%
+    rgba(150, 150, 150, 0.95) 0%,
+    rgb(24, 24, 24) 100%
   );
-  border-color: rgba(239, 68, 68, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
   box-shadow: 
-    0 8px 32px rgba(239, 68, 68, 0.5),
-    0 0 40px rgba(239, 68, 68, 0.3);
+    0 8px 32px rgba(224, 224, 224, 0.5),
+    0 0 40px rgba(0, 0, 0, 0.3);
   animation: none;
   z-index: 99999 !important;
   opacity: 1 !important;
@@ -60,13 +60,13 @@
 
 .floating-icon.active:hover {
   background: linear-gradient(135deg, 
-    rgba(220, 38, 38, 1) 0%,
-    rgba(185, 28, 28, 1) 100%
+    rgb(255, 166, 32) 0%,
+    rgb(79, 79, 79) 100%
   );
   transform: scale(1.15) rotate(90deg);
   box-shadow: 
-    0 12px 40px rgba(239, 68, 68, 0.7),
-    0 0 50px rgba(239, 68, 68, 0.5);
+    0 12px 40px rgba(255, 128, 48, 0.7),
+    0 0 50px rgba(210, 210, 210, 0.5);
 }
 
 .floating-icon svg {
@@ -85,7 +85,7 @@
 @keyframes gentlePulse { 
   0%, 100% { 
     transform: scale(1); 
-    box-shadow: 0 8px 32px rgba(30, 63, 255, 0.4);
+    box-shadow: 0 8px 32px rgb(255, 165, 30);
   } 
   50% { 
     transform: scale(1.05); 
@@ -99,7 +99,7 @@
   left: 0; 
   width: 100vw; 
   height: 100vh; 
-  background: radial-gradient(circle at center, #1E3FFF 0%, #0A0F1D 70%, #0D0D15 100%); 
+  background: radial-gradient(circle at center, #ff8f1e 0%, #1d150a 70%, #15130d 100%); 
   backdrop-filter: blur(20px); 
   z-index: 2000; 
   display: flex; 
@@ -269,24 +269,24 @@
 .ring-outer { 
   width: 200px; 
   height: 200px; 
-  background: radial-gradient(circle, #4CC3FF 0%, #1E3FFF 40%, transparent 70%); 
-  box-shadow: 0 0 20px #4CC3FF, 0 0 40px #1E3FFF, 0 0 80px #7A3FFF; 
+  background: radial-gradient(circle, #ff944c 0%, #ff961e 40%, transparent 70%); 
+  box-shadow: 0 0 20px #b7b6b6, 0 0 40px #ffffff, 0 0 80px #ff6f3f; 
   animation: ringPulse 3s ease-in-out infinite; 
 }
 
 .ring-middle { 
   width: 140px; 
   height: 140px; 
-  background: radial-gradient(circle, #4CC3FF 0%, #1E3FFF 40%, transparent 70%); 
-  box-shadow: 0 0 15px #4CC3FF, 0 0 30px #1E3FFF, 0 0 60px #7A3FFF; 
+  background: radial-gradient(circle, #ff614c 0%, #ff7700 40%, transparent 70%); 
+  box-shadow: 0 0 15px #ea5200, 0 0 30px #ee6700f0, 0 0 60px #ff9c3f; 
   animation: ringPulse 3s ease-in-out infinite 0.5s; 
 }
 
 .ring-inner { 
   width: 80px; 
   height: 80px; 
-  background: radial-gradient(circle, #4CC3FF 0%, #1E3FFF 40%, transparent 70%); 
-  box-shadow: 0 0 10px #4CC3FF, 0 0 20px #1E3FFF, 0 0 40px #7A3FFF; 
+  background: radial-gradient(circle, #ff704c 0%, #ff801e 40%, transparent 70%); 
+  box-shadow: 0 0 10px #ff5500, 0 0 20px #ffb81e, 0 0 40px #ff3f3f; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
@@ -300,22 +300,22 @@
 
 .ring-inner.listening { 
   animation: listeningPulse 1s ease-in-out infinite; 
-  background: radial-gradient(circle, rgba(76, 195, 255, 1) 0%, rgba(30, 63, 255, 0.9) 50%, rgba(122, 63, 255, 0.7) 100%); 
+  background: radial-gradient(circle, rgb(249, 128, 29) 0%, rgba(255, 128, 30, 0.9) 50%, rgba(255, 117, 63, 0.7) 100%); 
 }
 
 @keyframes listeningPulse { 
   0%, 100% { 
     transform: translate(-50%, -50%) scale(1); 
-    box-shadow: 0 0 20px rgba(76, 195, 255, 0.8); 
+    box-shadow: 0 0 20px rgba(255, 168, 76, 0.8); 
   } 
   50% { 
     transform: translate(-50%, -50%) scale(1.1); 
-    box-shadow: 0 0 40px rgba(76, 195, 255, 1); 
+    box-shadow: 0 0 40px rgb(255, 142, 76); 
   } 
 }
 
 .mic-icon { 
-  color: #ffffff; 
+  color: #ebeaea; 
   filter: drop-shadow(0 2px 4px rgba(76, 195, 255, 0.5)); 
 }
 
@@ -339,7 +339,7 @@
 .voice-bar { 
   width: 4px; 
   height: 20px; 
-  background: linear-gradient(to top, #7A3FFF, #4CC3FF); 
+  background: linear-gradient(to top, #ff723f, #ff4c4c); 
   border-radius: 2px; 
   animation: voiceWave 1s ease-in-out infinite; 
 }
@@ -459,8 +459,8 @@
 
 .mode-toggle-btn.active {
   background: linear-gradient(135deg, 
-    rgba(122, 63, 255, 0.9) 0%,
-    rgba(76, 195, 255, 0.8) 100%
+    rgba(255, 175, 63, 0.9) 0%,
+    rgba(255, 180, 76, 0.8) 100%
   );
   color: #ffffff;
   box-shadow: 
