@@ -1,3 +1,19 @@
+/* Orange glow for main title and subtitle */
+.orange-glow-title {
+	/* Improved orange glow for white background */
+	color: #ffffff;
+	text-shadow:
+		0 2px 16px #1d1d1d,
+		0 1px 0 #ffffff,
+		0 0 2px #020100;
+}
+.orange-glow-subtitle {
+	color: #ff944c;
+	text-shadow:
+		0 2px 8px #ffb81e,
+		0 1px 0 #fff,
+		0 0 2px #ff944c;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
